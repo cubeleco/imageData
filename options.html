@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Image Data Options</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<style type="text/css">
+		input[type="number"] {
+			width: 4em;
+		}
+		.box {
+			display: inline-block;
+			cursor: pointer;
+			margin: 0 0.2em;
+		}
+	</style>
+
+	<body>
+		<h2>Settings</h2>
+		<span>
+			<label>Position
+			<select id="infoPos">
+				<option value="0">Over image</option>
+				<option value="1">Fixed</option>
+				<option value="2">Follow cursor</option>
+				<option value="3">Before image</option>
+				<option value="4">After image</option>
+				<option value="5">Tooltip</option>
+			</select>
+			</label>
+		</span><br>
+		<span id="infoCurOffset">
+			Pixel Offset from cursor X <input id="infoOffX" type="number"> Y <input id="infoOffY" type="number">
+		</span>
+		<label><input type="checkbox" id="infoScale">Show scaled dimensions</label>
+
+		<label><a href="https://www.w3schools.com/css/default.asp">CSS</a> Style<br><textarea id="infoStyle" style="width: 100%;" rows="4";></textarea></label>
+		
+		<div style="display: flex; justify-content: space-between; margin: .3em 0;">
+			<div>
+				<div id="previewDiv">155&times;200 png<br><div id="previewScale">98&#x2922;126<br></div>Preview</div> 
+			</div>
+			<div>
+				<div id="defaultDiv" class="box">155&times;200 png<br>Default</div>
+				<div id="exampleDiv1" class="box">155&times;200 png<br>Example 1</div>
+				<div id="exampleDiv2" class="box">155&times;200 png<br>Example 2</div>
+				<div id="exampleDiv3" class="box">155&times;200 png<br>Example 3</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="options.js"></script>
+	</body>
+</html>
