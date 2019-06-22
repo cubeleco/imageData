@@ -1,54 +1,50 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Image Data Options</title>
+		<title>Image Data Settings</title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="options.css">
 	</head>
-	<style type="text/css">
-		input[type="number"] {
-			width: 4em;
-		}
-		.box {
-			display: inline-block;
-			cursor: pointer;
-			margin: 0 0.2em;
-		}
-	</style>
 
 	<body>
 		<h2>Settings</h2>
-		<span>
-			<label>Position
-			<select id="infoPos">
-				<option value="0">Over image</option>
-				<option value="1">Fixed</option>
-				<option value="2">Follow cursor</option>
-				<option value="3">Before image</option>
-				<option value="4">After image</option>
-				<option value="5">Tooltip</option>
-			</select>
-			</label>
-		</span><br>
-		<span id="infoCurOffset">
-			Pixel Offset from cursor X <input id="infoOffX" type="number"> Y <input id="infoOffY" type="number">
-		</span>
-		<label><input type="checkbox" id="infoScale">Show scaled dimensions</label>
 
-		<label><a href="https://www.w3schools.com/css/default.asp">CSS</a> Style<br><textarea id="infoStyle" style="width: 100%;" rows="4";></textarea></label>
-		
-		<div style="display: flex; justify-content: space-between; margin: .3em 0;">
-			<div>
-				<div id="previewDiv">155&times;200 png<br><div id="previewScale">98&#x2922;126<br></div>Preview</div> 
+		<label title="Where the image data div will be placed on the webpage. Over image is positioned relative to the parent container (position: absolute). Fixed, Follow cursor, and Tool tip are fixed on screen and stay while scrolling (position: fixed). Before and After image are placed inline and shifts other elements on the page (position: static).">Position on web page <select id="settPos">
+			<option value="0">Over image</option>
+			<option value="1">Fixed</option>
+			<option value="2">Follow cursor</option>
+			<option value="3">Before image</option>
+			<option value="4">After image</option>
+			<option value="5">Tool tip</option>
+		</select></label>
+		<br>
+		<label title="How the file size units should be divided. Binary is often used in file systems (divide by 1024). Decimal is often used by hard disks (divide by 1000). None will display the file size in bytes.">File size division <select id="settDiv">
+			<option value="1024">Binary</option>
+			<option value="1000">Decimal</option>
+			<option value="9007199254740991">None</option>
+		</select></label>
+		<br>
+		<div id="settCurOffset" title="How far the image data div should be offset from the cursor in pixels, on the X and Y axes. Negative values move in the opposite direction.">
+			Pixel Offset from cursor X <input id="settOffX" type="number"> Y <input id="settOffY" type="number"><br>
+		</div><br>
+		<label title="Shows the alt text of the image. It usually describes the image and is used by screen readers."><input type="checkbox" id="settAlt">Show alt text</label>
+		<label title="Shows the resolution of the image on the web page, if it differs from the file's resolution"><input type="checkbox" id="settScale">Show scaled resolution</label>
+		<br>
+		<label><a href="https://www.w3schools.com/css/default.asp" title="Learn CSS">CSS</a> Style<br>
+			<textarea id="settStyle" rows="4"></textarea>
+		</label>
+		<div id="boxContainer">
+			<div id="boxLeft">
+				<div id="previewDiv" title="Preview of the current CSS style">155&times;200 png<br><div id="previewAlt">Preview alt text<br></div><div id="previewScale">98&#x2922;126<br></div>743 kB</div> 
 			</div>
-			<div>
-				<div id="defaultDiv" class="box">155&times;200 png<br>Default</div>
-				<div id="exampleDiv1" class="box">155&times;200 png<br>Example 1</div>
-				<div id="exampleDiv2" class="box">155&times;200 png<br>Example 2</div>
-				<div id="exampleDiv3" class="box">155&times;200 png<br>Example 3</div>
+			<div id="boxRight">
+				<div id="defaultDiv" class="preset" title="Click to use the default CSS style">155&times;200 png<br>Default</div>
+				<div id="exampleDiv1" class="preset" title="Click to use this example CSS style">155&times;200 png<br>Example 1</div>
+				<div id="exampleDiv2" class="preset" title="Click to use this example CSS style">155&times;200 png<br>Example 2</div>
+				<div id="exampleDiv3" class="preset" title="Click to use this example CSS style">155&times;200 png<br>Example 3</div>
 			</div>
 		</div>
-
 		<script type="text/javascript" src="options.js"></script>
 	</body>
 </html>

@@ -1,27 +1,25 @@
 function toggleExtension() {
 	//get current enabled state
-	browser.storage.local.get('enabled', toggleState);
+	chrome.storage.local.get('enabled', toggleState);
 }
-function toggleState(result) {
-	var state = (typeof result.enabled == 'undefined')? false : !result.enabled;
+function toggleState(storage) {
+	//disable state on first toggle since default is enabled
+	const state = (typeof storage.enabled === 'undefined')? false : !storage.enabled;
 
-	browser.storage.local.set({
+	chrome.storage.local.set({
 		enabled: state
 	});
 	updateIcon(state);
-	//send message to content script to update its state
-	browser.tabs.query({currentWindow: true, active: true}, function(tabs) {
-		browser.tabs.sendMessage(tabs[0].id, {imgDataState: "update"});
-	});	
 }
 
 function updateIcon(state) {
-	browser.browserAction.setIcon({	path: state? 'icons/thumb-48.png' : 'icons/disable-48.png'	});
+	chrome.browserAction.setIcon({	path: state? 'icons/thumb-48.png' : 'icons/disable-48.png'	});
+	chrome.browserAction.setTitle({	title: state? 'Image Data (Enabled)' : 'Image Data (Disabled)'	});
 }
-function initIcon(result) {
-	updateIcon((typeof result.enabled == 'undefined')? true : result.enabled);
+function initIcon(storage) {
+	updateIcon((typeof storage.enabled === 'undefined')? true : storage.enabled);
 }
 //toggle extension when toolbar button is clicked
-browser.browserAction.onClicked.addListener(toggleExtension);
+chrome.browserAction.onClicked.addListener(toggleExtension);
 //on browser startup get prior state
-browser.storage.local.get('enabled', initIcon);
+chrome.storage.local.get('enabled', initIcon);

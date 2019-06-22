@@ -1,22 +1,21 @@
 {
 	"manifest_version": 2,
 	"name": "Image Data",
-	"version": "1.6",
+	"version": "1.7",
 
 	"applications": {
 		"gecko": {
 			"id": "{b8ecb56e-f778-4df4-962a-52974b36abdd}",
-			"strict_min_version": "48.0"
+			"strict_min_version": "57.0"
 		}
 	},
 
-	"description": "Shows more information about an image when you hover over it, such as its dimensions, file extension, and file size. \nCustomize with multiple dynamic and static positions, and change Image Data's look with CSS styles.",
+	"description": "Shows more information about an image when you hover over it, such as its resolution, file extension, and file size.",
 
 	"browser_action": {
 		"default_icon": {
 			"48": "icons/thumb-48.png"
-		},
-		"default_title": "Toggle Image Data"	
+		}
 	},
 	"icons": {
 		"48": "icons/thumb-48.png"
@@ -32,9 +31,8 @@
 	}],
 
 	"options_ui": {
-		"page": "options.html",
-		"browser_style": true
-	},
+		"page": "options.html"
+		},
 
-	"permissions": ["tabs","storage"]
+	"permissions": ["storage"]
 }

@@ -1,0 +1,28 @@
+input[type="number"] {
+	width: 5em;
+}
+
+.preset {
+	display: inline-block;
+	vertical-align: top;
+	cursor: pointer;
+	/*margin: 0 0.05em;*/
+}
+#boxContainer {
+	padding-bottom: .3em;
+}
+#boxLeft {
+	float: left;
+}
+#boxRight {
+	float: right;
+}
+#settCurOffset {
+	display: none;
+}
+#settStyle {
+	width: 100%;
+}
+#settScale {
+	margin-bottom: 1.2em;
+}
