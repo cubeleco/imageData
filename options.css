@@ -1,28 +1,48 @@
+* :not(a):not(#previewScale):not(#previewAlt):not(#previewSize) {
+	color: white;
+	background-color: #2c2c2f;
+}
+body {
+	padding: .5em;
+}
+a {
+	color: #0af;
+}
+h4 {
+	margin: 1.7em 0 .2em 0;
+}
+label {
+	margin: .1em 0;
+}
+button, input, select, textarea {
+	border-radius: 2px;
+	border: 2px outset #757575;
+}
+button {
+	padding: .1em .8em;
+}
+input[type="text"] {
+	width: 11em;
+	padding: 0 .7em;
+}
 input[type="number"] {
-	width: 5em;
+	width: 4em;
+}
+input[type="checkbox"] {
+	margin: 0 .6em 0 0;
 }
 
-.preset {
-	display: inline-block;
-	vertical-align: top;
-	cursor: pointer;
-	/*margin: 0 0.05em;*/
-}
-#boxContainer {
-	padding-bottom: .3em;
-}
-#boxLeft {
+.floatLeft {
 	float: left;
 }
-#boxRight {
+.floatRight {
 	float: right;
 }
 #settCurOffset {
 	display: none;
 }
-#settStyle {
+#style {
 	width: 100%;
-}
-#settScale {
-	margin-bottom: 1.2em;
+	padding: 0 .4em;
+	resize: vertical;
 }

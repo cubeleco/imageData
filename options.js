@@ -1,125 +1,111 @@
-const defaultStyle = 'color: white; background-color: rgba(0,0,10,0.8); font: 1.2em Arial, Helvetica, sans-serif; padding: 4px 5px; border-radius: 5px;';
-const exampleStyle1 = 'color: rgb(255,255,255); background-color: #07ac; font: 17px Impact, FreeSans, sans-serif; border-radius: 10px; padding: 0 10px; text-align: center; text-shadow: 2px 2px 2px #000d;';
-const exampleStyle2 = 'color: white; background: black url(https://c2.staticflickr.com/6/5547/14401060837_e56c5f1d7c.jpg) 50% 60%/150%; font: bold 1.4em "Ubuntu Condensed", "Latin Modern Math", Georgia, sans-serif; border-radius: 4px 30px; padding: 0px 10px 0px 10px; text-align: right; text-shadow: 3px 1px 3px black; box-shadow: 3px 2px 3px black;';
-const exampleStyle3 = 'color: white; background: black url(https://upload.wikimedia.org/wikipedia/commons/e/e7/198690-texture.jpg) repeat scroll 30% 60% / 120% auto; font: 1.3em Ubuntu, Monospace, sans-serif; text-shadow: rgba(0,0,0, 0.9) 0px 0px 3px; border: 4px outset #fff4; border-radius: 20px 0px; padding: 0px 8px 0px 5px;';
-
-//saving and updating settings functions
-function posChange(event) {
-	var pos = parseInt(event.target.value);
-	chrome.storage.local.set({
-		position: pos
+//display or hide element by id 
+function displayElem(id, isVisible) {
+	document.getElementById(id).style.display = isVisible ? 'inline' : 'none';
+}
+//save input val using its id as a name
+function saveValue(event) {
+	chrome.storage.local.set({ [event.target.id]: event.target.value });
+}
+function saveNumber(event) {
+	chrome.storage.local.set({ [event.target.id]: Number(event.target.value) });
+}
+function saveChecked(event) {
+	chrome.storage.local.set({ [event.target.id]: event.target.checked });
+}
+function saveKey(event) {
+	chrome.storage.local.set({ [event.target.id]:
+		//remove shortcut on modifier key
+		(event.key === 'Escape') ? {key: 'disabled'} : {
+			key: event.key,
+			ctrlKey: event.ctrlKey,
+			shiftKey: event.shiftKey,
+			altKey: event.altKey
+		}
 	});
-	posUpdate(pos);
-}
-function posUpdate(val) {
-	//if follow cursor or tooltip: show offset settings
-	document.getElementById('settCurOffset').style.display = (val === 2 || val === 5) ? 'inline' : 'none';
-}
-function divChange(event) {
-	chrome.storage.local.set({
-		fsdivision: parseInt(event.target.value)
-	});
-}
-
-function styleChange(event) {
-	var sty = event.target.value;
-	chrome.storage.local.set({
-		style: sty
-	});
-	styleUpdate(sty);
-}
-function styleUpdate(val) {
-	//update preview
-	document.getElementById('previewDiv').style.cssText = val;
-}
-function styleCopy(event) {
-	var elem = document.getElementById('settStyle');
-	//copy preset style to text box
-	elem.value = event.target.style.cssText;
-	//force input event to save style and update preview
-	elem.dispatchEvent(new Event('input'));
 }
 
-function altChange(event) {
-	var altT = event.target.checked;
-	chrome.storage.local.set({
-		alt: altT
-	});
-	altUpdate(altT);
-}
-function altUpdate(val) {
-	//change visibility of scale in preview
-	document.getElementById('previewAlt').style.display = (val) ? 'inline':'none';
-}
-function scaleChange(event) {
-	var scl = event.target.checked;
-	chrome.storage.local.set({
-		scale: scl
-	});
-	scaleUpdate(scl);
-}
-function scaleUpdate(val) {
-	//change visibility of scale in preview
-	document.getElementById('previewScale').style.display = (val) ? 'inline':'none';
-}
+//set text field value using shortcut key modifiers (modifier order doesn't matter)
+function keyUpdate(event) {
+	event.preventDefault();
+	const modKeys = ['control', 'shift', 'alt', 'os', 'meta'];
+	const lowkey = event.key.toLowerCase();
+	//clear text field
+	event.target.value = '';
 
-function offXChange(event) {
-	chrome.storage.local.set({
-		offX: parseInt(event.target.value)
-	});
+	//clear and lose focus on escape
+	if(lowkey === 'disabled' || lowkey === 'escape') {
+		event.target.blur();
+		return;
+	}
+	if(event.ctrlKey)
+		event.target.value += 'Ctrl+';
+	if(event.shiftKey)
+		event.target.value += 'Shift+';
+	if(event.altKey)
+		event.target.value += 'Alt+';
+	//avoid adding modifier keys
+	if(modKeys.indexOf(lowkey) < 0)
+		event.target.value += lowkey;
 }
-function offYChange(event) {
-	chrome.storage.local.set({
-		offY: parseInt(event.target.value)
-	});
-}
+function posUpdate(event) { const val = Number(event.target.value); displayElem('settCurOffset', val === 2 || val === 5); }
+function styleUpdate(event) { document.getElementById('previewDiv').style.cssText = event.target.value; }
+function altUpdate(event) { displayElem('previewAlt', event.target.checked); }
+function scaleUpdate(event) { displayElem('previewScale', event.target.checked); }
+function sizeUpdate(event) { displayElem('previewSize', Number(event.target.value) > 0); }
+function doNothing() {}
 
 
 function setPrefs(storage) {
-	var position = storage.position || 0;
-	document.getElementById('settPos').value = position;
-	posUpdate(position);
-	
-	document.getElementById('settDiv').value = storage.fsdivision || 1024;
-	
-	var style = storage.style || defaultStyle;
-	document.getElementById('settStyle').value = style;
-	styleUpdate(style);
-	
-	var alt = storage.alt || false;
-	document.getElementById('settAlt').checked = alt;
-	altUpdate(alt);
-	
-	var scale = storage.scale || false;
-	document.getElementById('settScale').checked = scale;
-	scaleUpdate(scale);
+	//restore saved options
+	document.getElementById('position').value = storage.position;
+	document.getElementById('fsdivision').value = storage.fsdivision;
+	document.getElementById('fsprecision').value = storage.fsprecision;
+	document.getElementById('style').value = storage.style;
+	document.getElementById('alt').checked = storage.alt;
+	document.getElementById('scale').checked = storage.scale;
+	document.getElementById('offX').value = storage.offX;
+	document.getElementById('offY').value = storage.offY;
 
-	//cursor x/y offsets
-	document.getElementById('settOffX').value = storage.offX || 20;
-	document.getElementById('settOffY').value = storage.offY || 20;
+	//update page with saved options
+	keyUpdate({target: document.getElementById('enableKey'), preventDefault: doNothing, ...storage.enableKey});
+	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
+	posUpdate({target:{value: storage.position}});
+	styleUpdate({target:{value: storage.style}});
+	altUpdate({target:{checked: storage.alt}});
+	scaleUpdate({target:{checked: storage.scale}});
+	sizeUpdate({target:{value: storage.fsdivision}});
 }
 function restoreOptions() {
-	//set styles of examples
-	document.getElementById('defaultDiv').style.cssText = defaultStyle;
-	document.getElementById('exampleDiv1').style.cssText = exampleStyle1;
-	document.getElementById('exampleDiv2').style.cssText = exampleStyle2;
-	document.getElementById('exampleDiv3').style.cssText = exampleStyle3;
-
-	chrome.storage.local.get(['position', 'fsdivision', 'style', 'alt', 'scale', 'offX', 'offY'], setPrefs);
+	loadPrefs(setPrefs);
+}
+function factoryReset() {
+	if(window.confirm('Reset all shortcuts, options, and custom CSS to factory defaults?')) {
+		//clear storage and reload page
+		chrome.storage.local.clear();
+		window.location.reload();
+	}
 }
 
+//save options
+document.getElementById('enableKey').addEventListener('keydown', saveKey);
+document.getElementById('holdEnableKey').addEventListener('keydown', saveKey);
+document.getElementById('position').addEventListener('input', saveNumber);
+document.getElementById('fsdivision').addEventListener('input', saveNumber);
+document.getElementById('fsprecision').addEventListener('input', saveNumber);
+document.getElementById('style').addEventListener('input', saveValue);
+document.getElementById('alt').addEventListener('change', saveChecked);
+document.getElementById('scale').addEventListener('change', saveChecked);
+document.getElementById('offX').addEventListener('input', saveNumber);
+document.getElementById('offY').addEventListener('input', saveNumber);
+//options updating the page
+document.getElementById('enableKey').addEventListener('keydown', keyUpdate);
+document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
+document.getElementById('position').addEventListener('input', posUpdate);
+document.getElementById('fsdivision').addEventListener('input', sizeUpdate);
+document.getElementById('style').addEventListener('input', styleUpdate);
+document.getElementById('alt').addEventListener('change', altUpdate);
+document.getElementById('scale').addEventListener('change', scaleUpdate);
 
+document.getElementById('factoryReset').addEventListener('click', factoryReset);
+//init
 document.addEventListener('DOMContentLoaded', restoreOptions);
-//settings input
-document.getElementById('settPos').addEventListener('input', posChange);
-document.getElementById('settDiv').addEventListener('input', divChange);
-document.getElementById('settStyle').addEventListener('input', styleChange);
-document.getElementById('settAlt').addEventListener('change', altChange);
-document.getElementById('settScale').addEventListener('change', scaleChange);
-document.getElementById('settOffX').addEventListener('input', offXChange);
-document.getElementById('settOffY').addEventListener('input', offYChange);
-//presets styles
-document.getElementById('defaultDiv').addEventListener('click', styleCopy);
-document.getElementById('exampleDiv1').addEventListener('click', styleCopy);
-document.getElementById('exampleDiv2').addEventListener('click', styleCopy);
-document.getElementById('exampleDiv3').addEventListener('click', styleCopy);

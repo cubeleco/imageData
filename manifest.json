@@ -1,16 +1,16 @@
 {
 	"manifest_version": 2,
 	"name": "Image Data",
-	"version": "1.7",
+	"version": "2.0",
 
 	"applications": {
 		"gecko": {
 			"id": "{b8ecb56e-f778-4df4-962a-52974b36abdd}",
-			"strict_min_version": "57.0"
+			"strict_min_version": "55.0"
 		}
 	},
 
-	"description": "Shows more information about an image when you hover over it, such as its resolution, file extension, and file size.",
+	"description": "Show image resolution, file type, and file size on mouseover",
 
 	"browser_action": {
 		"default_icon": {
@@ -26,7 +26,7 @@
 	},
 	"content_scripts": [{
 		"matches": ["<all_urls>"],
-		"js": ["imgdata.js"],
+		"js": ["defaults.js", "imgdata.js"],
 		"run_at": "document_start"
 	}],
 
