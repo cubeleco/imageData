@@ -9,8 +9,25 @@ function saveValue(event) {
 function saveNumber(event) {
 	chrome.storage.local.set({ [event.target.id]: Number(event.target.value) });
 }
+//calculate precision scaling ahead of time
+function savePrecision(event) {
+	chrome.storage.local.set({ [event.target.id]: Math.pow(10, event.target.value) });
+}
 function saveChecked(event) {
 	chrome.storage.local.set({ [event.target.id]: event.target.checked });
+}
+function saveStyle(event) {
+	let style = document.createElement('div').style;
+	//create style from css text
+	style.cssText = event.target.value;
+
+	//save options to storage
+	//if position properties defined, avoid cursor follow on that axis
+	chrome.storage.local.set({
+		style: event.target.value,
+		curLeft: style.left === '' && style.right === '',
+		curTop: style.top === '' && style.bottom === ''
+	});
 }
 function saveKey(event) {
 	chrome.storage.local.set({ [event.target.id]:
@@ -47,11 +64,20 @@ function keyUpdate(event) {
 	if(modKeys.indexOf(lowkey) < 0)
 		event.target.value += lowkey;
 }
-function posUpdate(event) { const val = Number(event.target.value); displayElem('settCurOffset', val === 2 || val === 5); }
 function styleUpdate(event) { document.getElementById('previewDiv').style.cssText = event.target.value; }
 function altUpdate(event) { displayElem('previewAlt', event.target.checked); }
 function scaleUpdate(event) { displayElem('previewScale', event.target.checked); }
-function sizeUpdate(event) { displayElem('previewSize', Number(event.target.value) > 0); }
+function posUpdate(event) {
+	const num = Number(event.target.value);
+	const disabled = (num !== 2 && num !== 5);
+	document.getElementById('offX').disabled = disabled;
+	document.getElementById('offY').disabled = disabled;
+}
+function sizeUpdate(event) {
+	const enabled = Number(event.target.value) > 0;
+	displayElem('previewSize', enabled);
+	document.getElementById('fsprecision').disabled = !enabled;
+}
 function doNothing() {}
 
 
@@ -59,21 +85,23 @@ function setPrefs(storage) {
 	//restore saved options
 	document.getElementById('position').value = storage.position;
 	document.getElementById('fsdivision').value = storage.fsdivision;
-	document.getElementById('fsprecision').value = storage.fsprecision;
+	document.getElementById('fsprecision').value = storage.fsprecision.toString().length - 1;
 	document.getElementById('style').value = storage.style;
 	document.getElementById('alt').checked = storage.alt;
 	document.getElementById('scale').checked = storage.scale;
+	document.getElementById('minWidth').value = storage.minWidth;
+	document.getElementById('minHeight').value = storage.minHeight;
 	document.getElementById('offX').value = storage.offX;
 	document.getElementById('offY').value = storage.offY;
 
 	//update page with saved options
-	keyUpdate({target: document.getElementById('enableKey'), preventDefault: doNothing, ...storage.enableKey});
-	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
-	posUpdate({target:{value: storage.position}});
 	styleUpdate({target:{value: storage.style}});
 	altUpdate({target:{checked: storage.alt}});
 	scaleUpdate({target:{checked: storage.scale}});
+	posUpdate({target:{value: storage.position}});
 	sizeUpdate({target:{value: storage.fsdivision}});
+	keyUpdate({target: document.getElementById('enableKey'), preventDefault: doNothing, ...storage.enableKey});
+	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
 }
 function restoreOptions() {
 	loadPrefs(setPrefs);
@@ -91,10 +119,12 @@ document.getElementById('enableKey').addEventListener('keydown', saveKey);
 document.getElementById('holdEnableKey').addEventListener('keydown', saveKey);
 document.getElementById('position').addEventListener('input', saveNumber);
 document.getElementById('fsdivision').addEventListener('input', saveNumber);
-document.getElementById('fsprecision').addEventListener('input', saveNumber);
-document.getElementById('style').addEventListener('input', saveValue);
+document.getElementById('fsprecision').addEventListener('input', savePrecision);
+document.getElementById('style').addEventListener('input', saveStyle);
 document.getElementById('alt').addEventListener('change', saveChecked);
 document.getElementById('scale').addEventListener('change', saveChecked);
+document.getElementById('minWidth').addEventListener('input', saveNumber);
+document.getElementById('minHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
 document.getElementById('offY').addEventListener('input', saveNumber);
 //options updating the page

@@ -1,4 +1,4 @@
-* :not(a):not(#previewScale):not(#previewAlt):not(#previewSize) {
+* :not(a):not([disabled]):not(#previewScale):not(#previewAlt):not(#previewSize) {
 	color: white;
 	background-color: #2c2c2f;
 }
@@ -9,10 +9,10 @@ a {
 	color: #0af;
 }
 h4 {
-	margin: 1.7em 0 .2em 0;
+	margin: 1.7em 0 .15em 0;
 }
 label {
-	margin: .1em 0;
+	margin: .15em 0;
 }
 button, input, select, textarea {
 	border-radius: 2px;
@@ -21,25 +21,37 @@ button, input, select, textarea {
 button {
 	padding: .1em .8em;
 }
+input:disabled {
+	color: #999;
+	background-color: #333;
+	border: 2px inset #555;
+}
 input[type="text"] {
 	width: 11em;
 	padding: 0 .7em;
+	margin-right: .2em;
 }
 input[type="number"] {
 	width: 4em;
 }
 input[type="checkbox"] {
-	margin: 0 .6em 0 0;
+	vertical-align: middle;
+	margin: 0 .2em 0 0;
 }
 
+.fixedWidth {
+	display: inline-block;
+	width: 11em;
+	margin-right: .2em;
+}
+.labelCheckBox {
+	vertical-align: middle;
+}
 .floatLeft {
 	float: left;
 }
 .floatRight {
 	float: right;
-}
-#settCurOffset {
-	display: none;
 }
 #style {
 	width: 100%;

@@ -1,16 +1,15 @@
 {
 	"manifest_version": 2,
 	"name": "Image Data",
-	"version": "2.0",
+	"version": "2.1",
+	"description": "Show image resolution, file type, and file size on mouse over",
 
 	"applications": {
 		"gecko": {
 			"id": "{b8ecb56e-f778-4df4-962a-52974b36abdd}",
-			"strict_min_version": "55.0"
+			"strict_min_version": "48.0"
 		}
 	},
-
-	"description": "Show image resolution, file type, and file size on mouseover",
 
 	"browser_action": {
 		"default_icon": {
@@ -32,7 +31,7 @@
 
 	"options_ui": {
 		"page": "options.html"
-		},
+	},
 
-	"permissions": ["storage"]
+	"permissions": ["<all_urls>", "storage"]
 }
