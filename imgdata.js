@@ -83,6 +83,11 @@ function imgHover(event) {
 	if(event.target.naturalWidth < prefs.minWidth || event.target.naturalHeight < prefs.minHeight) {
 		displayData(false);
 		return;
+    }
+	//hide if the scaled img is smaller than minimum
+	if(event.target.width < prefs.minScaledWidth || event.target.height < prefs.minScaledHeight) {
+		displayData(false);
+		return;
 	}
 	//dont change display incase mouse left img before onload
 	if(event.type !== 'load')

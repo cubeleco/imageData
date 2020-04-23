@@ -90,7 +90,9 @@ function setPrefs(storage) {
 	document.getElementById('alt').checked = storage.alt;
 	document.getElementById('scale').checked = storage.scale;
 	document.getElementById('minWidth').value = storage.minWidth;
-	document.getElementById('minHeight').value = storage.minHeight;
+    document.getElementById('minHeight').value = storage.minHeight;
+    document.getElementById('minScaledWidth').value = storage.minScaledWidth;
+	document.getElementById('minScaledHeight').value = storage.minScaledHeight;
 	document.getElementById('offX').value = storage.offX;
 	document.getElementById('offY').value = storage.offY;
 
@@ -125,6 +127,8 @@ document.getElementById('alt').addEventListener('change', saveChecked);
 document.getElementById('scale').addEventListener('change', saveChecked);
 document.getElementById('minWidth').addEventListener('input', saveNumber);
 document.getElementById('minHeight').addEventListener('input', saveNumber);
+document.getElementById('minScaledWidth').addEventListener('input', saveNumber);
+document.getElementById('minScaledHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
 document.getElementById('offY').addEventListener('input', saveNumber);
 //options updating the page

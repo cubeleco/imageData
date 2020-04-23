@@ -23,6 +23,8 @@ function loadPrefs(callback) {
 		curLeft: true,
 		curTop: true,
 		minWidth: 0,
-		minHeight: 0
+		minHeight: 0,
+		minScaledWidth: 0,
+		minScaledHeight: 0
 	}, callback);
 }
