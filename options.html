@@ -1,83 +1,84 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Image Data Settings</title>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="options.css">
-	</head>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="color-scheme" content="dark">
+	<link rel="stylesheet" type="text/css" href="options.css">
+	<title>Image Data Options</title>
+</head>
 
-	<body>
-		<div id="optionsNote">
-			<button id="factoryReset" class="floatRight">Default options</button>
-			The following options are saved automatically, but tabs need to be refreshed to apply changes.
-			<a href="https://github.com/aridacity/imageData/wiki/Options">Options Help</a>
-		</div>
-		<h4>Shortcuts</h4>
-		<label for="enableKey" title="Keyboard shortcut to toggle when image data should be shown. Press Escape to disable the shortcut.">
-			<input id="enableKey" type="text" placeholder="Type a shortcut">
-			<span>Toggle add-on</span>
-		</label>
-		<label for="holdEnableKey" title="Keyboard shortcut to show or hide image data for a moment, while held down. Press Escape to disable the shortcut.">
-			<input id="holdEnableKey" type="text" placeholder="Type a shortcut">
-			<span>Quick show / hide</span>
-		</label>
-		<h4>Data display</h4>
-		<label for="position" title="Where the image data div will be placed on the webpage. Over image is placed within the image's parent container (position: absolute). Fixed, Follow cursor, and Tool tip do not scroll with the page (position: fixed). Before and After image are placed inline and shifts other elements on the page (position: static).">
-			<div class="fixedWidth"><select id="position">
-				<option value="0">Over image</option>
-				<option value="1">Fixed</option>
-				<option value="2">Follow cursor</option>
-				<option value="3">Before image</option>
-				<option value="4">After image</option>
-				<option value="5">Tool tip</option>
-			</select></div>
-			<span>Position on web page</span>
-		</label>
-		<label for="fsdivision" title="How the file size units should be divided. Binary is often used in file systems (/1024). Decimal is often used by hard disks (/1000). In bytes will display the file size in bytes. Disabled doesn't show the filesize.">
-			<div class="fixedWidth"><select id="fsdivision">
-				<option value="1024">Binary</option>
-				<option value="1000">Decimal</option>
-				<option value="9007199254740991">in bytes</option>
-				<option value="-1">Disabled</option>
-			</select></div>
-			<span>File size</span>
-		</label>
-		<label for="fsprecision" title="How many digits there should be after the decimal point for the file size. Must be an integer 0-20">
-			<div class="fixedWidth"><input id="fsprecision" type="number" min="0" max="20"></div>
-			<span>File size precision</span>
-		</label>
-		<label title="Images smaller than this size will not show image data">
-			<div class="fixedWidth"><input id="minWidth" type="number"> &times; <input id="minHeight" type="number"></div>
-			<span>Minimum resolution</span>
-		</label>
-		<label title="When using the follow cursor or tooltip positioning, How far the image data div should be offset from the cursor in pixels, on the X and Y axes. Negative values move in the opposite direction.">
-			<div class="fixedWidth"><input id="offX" type="number"> &times; <input id="offY" type="number"></div>
-			<span>X/Y Pixel offset from cursor</span>
-		</label>
-		<label title="Shows the alt text of the image. Usually used by screen readers to describe the image.">
-			<input type="checkbox" id="alt">
-			<span class="labelCheckBox">Show alt text</span>
-		</label>
-		<label title="Shows the resolution of the image on the web page, if it differs from the file's resolution">
-			<input type="checkbox" id="scale">
-			<span class="labelCheckBox">Show scaled resolution</span>
-		</label>
-		<h4>
-			Custom <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps" title="Learn CSS">CSS</a>
-			<div class="floatRight"><a href="https://github.com/aridacity/imageData/blob/master/presets.css">CSS presets</a></div>
-		</h4>
-		<textarea id="style" rows="5" spellcheck="false"></textarea>
-		<div id="previewContainer">
-			<div class="floatLeft">
-				<div id="previewDiv" title="Preview of image data div with Custom CSS">155&times;200 jpg<br>
-					<div id="previewAlt">Preview alt text<br></div>
-					<div id="previewScale">98&#x2922;126<br></div>
-					<div id="previewSize">347 kB</div>
-				</div>
+<body>
+	<div id="optionsNote">
+		<button id="factoryReset" class="floatRight">Default options</button>
+		The following options are saved automatically, but tabs need to be refreshed to apply changes.
+		<a href="https://github.com/aridacity/imageData/wiki/Options">Options Help</a>
+	</div>
+	<h4>Shortcuts</h4>
+	<label title="Keyboard shortcut to show or hide image data for a moment, while held down. Press Escape to disable the shortcut.">
+		<input id="holdEnableKey" type="text" placeholder="Type a shortcut">
+		<span>Quick toggle</span>
+	</label>
+	<h4>Data display</h4>
+	<label title="Where the image data div will be placed on the webpage. Over image is placed within the image's parent container (position: absolute). Fixed, Follow cursor, and Tool tip do not scroll with the page (position: fixed). Before and After image are placed inline and shifts other elements on the page (position: static).">
+		<div class="fixedWidth"><select id="position">
+			<option value="0">Over image</option>
+			<option value="1">Fixed</option>
+			<option value="2">Follow cursor</option>
+			<option value="3">Before image</option>
+			<option value="4">After image</option>
+			<option value="5">Tool tip</option>
+		</select></div>
+		<span>Position on web page</span>
+	</label>
+	<label title="How the file size units should be divided. Binary is often used in file systems (/1024). Decimal is often used by hard disks (/1000). In bytes will display the file size in bytes. Disabled doesn't show the filesize.">
+		<div class="fixedWidth"><select id="fsdivision">
+			<option value="1024">Binary</option>
+			<option value="1000">Decimal</option>
+			<option value="9007199254740991">in bytes</option>
+			<option value="-1">Disabled</option>
+		</select></div>
+		<span>File size</span>
+	</label>
+	<label title="How many digits there should be after the decimal point for the file size. Must be an integer 0-20">
+		<div class="fixedWidth"><input id="fsprecision" type="number" min="0" max="20"></div>
+		<span>File size precision</span>
+	</label>
+	<label title="How many milliseconds before image data will be shown">
+		<div class="fixedWidth"><input id="delay" type="number" min="0" step="100"></div>
+		<span>Display delay</span>
+	</label>
+	<label for="minWidth" title="Images smaller than this size will not show image data">
+		<div class="fixedWidth"><input id="minWidth" type="number" min="0" step="10"> &times; <input id="minHeight" type="number" min="0" step="10"></div>
+		<span>Minimum resolution</span>
+	</label>
+	<label for="offX" title="If using the follow cursor or tooltip positioning, how many pixels the image data div should be offset from the cursor, on the X and Y axes. Negative values move in the opposite direction.">
+		<div class="fixedWidth"><input id="offX" type="number"> &times; <input id="offY" type="number"></div>
+		<span>X/Y Pixel offset from cursor</span>
+	</label>
+	<label title="Shows the alt text of the image. Usually used by screen readers to describe the image.">
+		<input type="checkbox" id="alt">
+		<span class="labelCheckBox">Show alt text</span>
+	</label>
+	<label title="Shows the resolution of the image on the web page, if it differs from the file's resolution">
+		<input type="checkbox" id="scale">
+		<span class="labelCheckBox">Show scaled resolution</span>
+	</label>
+	<h4>
+		Custom CSS
+		<a class="floatRight" href="https://github.com/aridacity/imageData/blob/master/presets.css">CSS presets</a>
+	</h4>
+	<textarea id="style" rows="5" spellcheck="false"></textarea>
+	<div id="previewContainer">
+		<div class="floatLeft">
+			<div id="previewDiv" title="Preview of image data div with Custom CSS">155&times;200 jpg<br>
+				<div id="previewAlt">Preview alt text<br></div>
+				<div id="previewScale">98&#x2922;126<br></div>
+				<div id="previewSize">347 kB</div>
 			</div>
 		</div>
-		<script type="text/javascript" src="../defaults.js"></script>
-		<script type="text/javascript" src="options.js"></script>
-	</body>
+	</div>
+	<script type="text/javascript" src="../defaults.js"></script>
+	<script type="text/javascript" src="options.js"></script>
+</body>
 </html>

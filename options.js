@@ -18,7 +18,7 @@ function saveChecked(event) {
 }
 function saveStyle(event) {
 	let style = document.createElement('div').style;
-	//create style from css text
+	//create style object from css text
 	style.cssText = event.target.value;
 
 	//save options to storage
@@ -86,6 +86,7 @@ function setPrefs(storage) {
 	document.getElementById('position').value = storage.position;
 	document.getElementById('fsdivision').value = storage.fsdivision;
 	document.getElementById('fsprecision').value = storage.fsprecision.toString().length - 1;
+	document.getElementById('delay').value = storage.delay;
 	document.getElementById('style').value = storage.style;
 	document.getElementById('alt').checked = storage.alt;
 	document.getElementById('scale').checked = storage.scale;
@@ -100,7 +101,6 @@ function setPrefs(storage) {
 	scaleUpdate({target:{checked: storage.scale}});
 	posUpdate({target:{value: storage.position}});
 	sizeUpdate({target:{value: storage.fsdivision}});
-	keyUpdate({target: document.getElementById('enableKey'), preventDefault: doNothing, ...storage.enableKey});
 	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
 }
 function restoreOptions() {
@@ -110,16 +110,18 @@ function factoryReset() {
 	if(window.confirm('Reset all shortcuts, options, and custom CSS to factory defaults?')) {
 		//clear storage and reload page
 		chrome.storage.local.clear();
+		//not available in chrome
+		chrome.commands.reset('_execute_browser_action');
 		window.location.reload();
 	}
 }
 
 //save options
-document.getElementById('enableKey').addEventListener('keydown', saveKey);
 document.getElementById('holdEnableKey').addEventListener('keydown', saveKey);
 document.getElementById('position').addEventListener('input', saveNumber);
 document.getElementById('fsdivision').addEventListener('input', saveNumber);
 document.getElementById('fsprecision').addEventListener('input', savePrecision);
+document.getElementById('delay').addEventListener('input', saveNumber);
 document.getElementById('style').addEventListener('input', saveStyle);
 document.getElementById('alt').addEventListener('change', saveChecked);
 document.getElementById('scale').addEventListener('change', saveChecked);
@@ -128,7 +130,6 @@ document.getElementById('minHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
 document.getElementById('offY').addEventListener('input', saveNumber);
 //options updating the page
-document.getElementById('enableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('position').addEventListener('input', posUpdate);
 document.getElementById('fsdivision').addEventListener('input', sizeUpdate);

@@ -1,30 +1,48 @@
-* :not(a):not([disabled]):not(#previewScale):not(#previewAlt):not(#previewSize) {
+html, body, span {
 	color: white;
 	background-color: #2c2c2f;
 }
 body {
 	padding: .5em;
+	overflow: hidden;
 }
 a {
 	color: #0af;
+	font-weight: bold;
+	text-decoration: none;
 }
 h4 {
-	margin: 1.7em 0 .15em 0;
+	margin: 1.5em 0 .15em 0;
 }
 label {
 	margin: .15em 0;
 }
 button, input, select, textarea {
+	color: white;
+	background-color: #202020;
+	caret-color: white;
 	border-radius: 2px;
-	border: 2px outset #757575;
+	border: 2px outset #656565;
 }
-button {
-	padding: .1em .8em;
+::selection {
+	color: black;
+	background-color: #0af;
 }
 input:disabled {
 	color: #999;
 	background-color: #333;
 	border: 2px inset #555;
+}
+input:invalid:not(#fsprecision) {
+	box-shadow: none;
+}
+button {
+	padding: .1em .8em;
+}
+textarea {
+	width: 100%;
+	padding: 0 .4em;
+	resize: vertical;
 }
 input[type="text"] {
 	width: 11em;
@@ -52,9 +70,4 @@ input[type="checkbox"] {
 }
 .floatRight {
 	float: right;
-}
-#style {
-	width: 100%;
-	padding: 0 .4em;
-	resize: vertical;
 }

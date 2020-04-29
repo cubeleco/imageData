@@ -5,7 +5,8 @@
 //holdEnableDown: if holdEnableKey is held down
 //data: dom element to display image data
 //img: last hovered image to avoid loading same data
-var holdEnableDown, data, img, lastHeight;
+//lastHeight: last hovered image height for image finishing onload
+var holdEnableDown, data, img, lastHeight, delayTimeout;
 
 	//helper functions
 //round num to #digits after the decimal point
@@ -34,9 +35,12 @@ function readImgHeader(event) {
 	if(sizeDiv.id === 'imgDataSize' && bytes > 0)
 		sizeDiv.textContent = getHumanReadable(bytes);
 }
-function getFileSize() {
+function getFileSize(keepOld) {
 	//don't get size when disabled
-	if(!prefs.enabled || prefs.fsdivision < 0 || img === undefined)
+	if(!prefs.enabled || prefs.fsdivision < 0 || img === undefined || img.src === '')
+		return;
+	//keep if filesize already exists
+	if(keepOld && data.lastElementChild.textContent !== '')
 		return;
 
 	let xhr = new XMLHttpRequest();
@@ -64,10 +68,8 @@ function placeData() {
 	}
 }
 function displayData(isVisible) {
-	if(isVisible) //show data
-		data.style.removeProperty('display');
-	else //hide data
-		data.style.display = 'none';
+	data.style.visibility = isVisible ? 'visible' : 'hidden';
+	data.style.opacity = isVisible ? 1:0;
 }
 
 	//main display of data function
@@ -80,19 +82,32 @@ function imgHover(event) {
 		return;
 	}
 	//hide if img is smaller than minimum
-	if(event.target.naturalWidth < prefs.minWidth || event.target.naturalHeight < prefs.minHeight) {
+	if(event.target.width < prefs.minWidth || event.target.height < prefs.minHeight) {
 		displayData(false);
 		return;
 	}
 	//dont change display incase mouse left img before onload
-	if(event.type !== 'load')
-		displayData(prefs.enabled);
+	if(event.type !== 'load') {
+		displayData(false);
+		window.clearTimeout(delayTimeout);
+		//show data after delay if set
+		if(prefs.enabled && prefs.delay > 0)
+			delayTimeout = window.setTimeout(displayData, prefs.delay, true);
+		else
+			displayData(prefs.enabled);
+
+		//reuse MouseEvent to reposition if tooltip
+		if(prefs.position === 2 || prefs.position === 5)
+			curMove(event);
+	}
 
 	if(img !== undefined) {
 		//avoid getting same data
 		if(event.target.src === img.src && event.target.naturalHeight === lastHeight) {
 			//image may be reused or finished loading
 			placeData();
+			//enabled may have changed on different page
+			getFileSize(true);
 			return;
 		}
 		//remove old listener
@@ -102,18 +117,17 @@ function imgHover(event) {
 	lastHeight = img.naturalHeight;
 	img.addEventListener('load', imgHover);
 
-	//reuse MouseEvent to reposition if tooltip
-	if(prefs.position === 2 || prefs.position === 5)
-		curMove(event);
-
+	//dont add or place data before prefs have loaded
+	if(prefs.enabled === undefined)
+		return;
 	//clear and set data div container
 	data.textContent = '';
 
-	//create info string to fill div. image dimensions and file extension 
+	//get file extension and image resolution
 	let ext = /jpe?g|a?png|gif|webp|tiff?|bmp|svg|bpg|ico|cur/i.exec( img.src.substr(img.src.lastIndexOf('.')+1) );
-	let fullDim = img.naturalWidth + '\u00D7' + img.naturalHeight + (ext? '\xa0' + ext[0] : '');
+	let fullRes = img.naturalWidth + '\u00D7' + img.naturalHeight + (ext? '\xa0' + ext[0] : '');
 	//add first line to div
-	appendTextLine(data, fullDim);
+	appendTextLine(data, fullRes);
 
 	//add alt text if pref enabled and if present
 	if(prefs.alt && img.alt) {
@@ -129,9 +143,9 @@ function imgHover(event) {
 	size.id = 'imgDataSize';
 	data.appendChild(size);
 	
-	//put data on page a request filesize header
+	//put data on page and force request filesize header
 	placeData();
-	getFileSize();
+	getFileSize(false);
 }
 function curMove(event) {
 	if(prefs.curTop)
@@ -160,8 +174,6 @@ function keyDown(event) {
 		holdEnableDown = true;
 		toggleState();
 	}
-	if(keyMatch(prefs.enableKey, event))
-		toggleState();
 }
 function keyUp(event) {
 	//if key was held and released regardless of shift key
@@ -192,8 +204,8 @@ function setPrefs(storage) {
 			break;
 	}
 	//add default style attributes to hopefully avoid being affected by the page's styles
-	data.style.cssText = 'z-index: 2147483647 !important; visibility: visible; overflow: auto; clear: both; line-height: normal; float: none; width: auto; height: auto; position: ' + pos + prefs.style;
-	displayData(prefs.enabled);
+	data.style.cssText = 'z-index: 2147483647 !important; overflow: auto; clear: both; line-height: normal; float: none; width: auto; height: auto; position: ' + pos + prefs.style;
+	//displayData(prefs.enabled);
 
 	//reload data if img hovered before prefs were loaded
 	if(img !== undefined) {
@@ -203,16 +215,21 @@ function setPrefs(storage) {
 		img = undefined;
 		imgHover(ev);
 	}
-	document.addEventListener('keydown', keyDown);
-	document.addEventListener('keyup', keyUp);
+	//listen for shortcut keys if defined
+	if(prefs.holdEnableKey.key !== 'disabled') {
+		document.addEventListener('keydown', keyDown);
+		document.addEventListener('keyup', keyUp);
+	}
 }
 function enabledChange(changes) {
 	if(changes.enabled.newValue !== undefined) {
 		prefs.enabled = changes.enabled.newValue;
-		displayData(prefs.enabled);
-		//get filesize if it has not been set yet
-		if(data.lastElementChild.textContent === '')
-			getFileSize();
+		//avoid change from different tab
+		if(document.hasFocus()) {
+			displayData(prefs.enabled);
+			//get filesize if it has not been set yet
+			getFileSize(true);
+		}
 	}
 }
 function init() {
