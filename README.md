@@ -1,4 +1,6 @@
 # imageData
-Web extension that displays common image data when hovering an image
+Web extension that displays image resolution, file type, and file size when hovering an image
 
-[Firefox addon page](https://addons.mozilla.org/en-US/firefox/addon/image-data/)
+Get it for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/image-data/)
+
+For documentation see the [wiki](https://github.com/aridacity/imageData/wiki)
