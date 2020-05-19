@@ -12,14 +12,13 @@
 	<div id="optionsNote">
 		<button id="factoryReset" class="floatRight">Default options</button>
 		The following options are saved automatically, but tabs need to be refreshed to apply changes.
-		<a href="https://github.com/aridacity/imageData/wiki/Options">Options Help</a>
 	</div>
 	<h4>Shortcuts</h4>
 	<label title="Keyboard shortcut to show or hide image data for a moment, while held down. Press Escape to disable the shortcut.">
-		<input id="holdEnableKey" type="text" placeholder="Type a shortcut">
+		<input id="holdEnableKey" type="text" readonly="true" placeholder="Type a shortcut">
 		<span>Quick toggle</span>
-	</label>
-	<h4>Data display</h4>
+	</label><br>
+	<h4>Options</h4>
 	<label title="Where the image data div will be placed on the webpage. Over image is placed within the image's parent container (position: absolute). Fixed, Follow cursor, and Tool tip do not scroll with the page (position: fixed). Before and After image are placed inline and shifts other elements on the page (position: static).">
 		<div class="fixedWidth"><select id="position">
 			<option value="0">Over image</option>
@@ -30,42 +29,35 @@
 			<option value="5">Tool tip</option>
 		</select></div>
 		<span>Position on web page</span>
-	</label>
-	<label title="How the file size units should be divided. Binary is often used in file systems (/1024). Decimal is often used by hard disks (/1000). In bytes will display the file size in bytes. Disabled doesn't show the filesize.">
-		<div class="fixedWidth"><select id="fsdivision">
-			<option value="1024">Binary</option>
-			<option value="1000">Decimal</option>
-			<option value="9007199254740991">in bytes</option>
-			<option value="-1">Disabled</option>
-		</select></div>
-		<span>File size</span>
-	</label>
+	</label><br>
+	<label title="How the file size units should be divided. 1024 (default) is often used in file systems. 1000 is often used by hard disks. To display the file size in bytes use a really large number such as 1e+30.">
+		<div class="fixedWidth"><input id="fsdivision" type="number" min="2" max="9007199254740991"></div>
+		<span>File size divisor</span>
+	</label><br>
 	<label title="How many digits there should be after the decimal point for the file size. Must be an integer 0-20">
 		<div class="fixedWidth"><input id="fsprecision" type="number" min="0" max="20"></div>
 		<span>File size precision</span>
-	</label>
+	</label><br>
 	<label title="How many milliseconds before image data will be shown">
 		<div class="fixedWidth"><input id="delay" type="number" min="0" step="100"></div>
 		<span>Display delay</span>
-	</label>
+	</label><br>
 	<label for="minWidth" title="Images smaller than this size will not show image data">
 		<div class="fixedWidth"><input id="minWidth" type="number" min="0" step="10"> &times; <input id="minHeight" type="number" min="0" step="10"></div>
 		<span>Minimum resolution</span>
-	</label>
+	</label><br>
 	<label for="offX" title="If using the follow cursor or tooltip positioning, how many pixels the image data div should be offset from the cursor, on the X and Y axes. Negative values move in the opposite direction.">
 		<div class="fixedWidth"><input id="offX" type="number"> &times; <input id="offY" type="number"></div>
 		<span>X/Y Pixel offset from cursor</span>
-	</label>
-	<label title="Shows the alt text of the image. Usually used by screen readers to describe the image.">
-		<input type="checkbox" id="alt">
-		<span class="labelCheckBox">Show alt text</span>
-	</label>
-	<label title="Shows the resolution of the image on the web page, if it differs from the file's resolution">
-		<input type="checkbox" id="scale">
-		<span class="labelCheckBox">Show scaled resolution</span>
-	</label>
+	</label><br>
+	<h4 title="What data is displayed, and its order">
+		Data JSON
+		<a class="helpLink" href="https://github.com/aridacity/imageData/wiki/Options#data-json">?</a>
+	</h4>
+	<textarea id="display" rows="5" spellcheck="false"></textarea>
 	<h4>
 		Custom CSS
+		<a class="helpLink" href="https://github.com/aridacity/imageData/wiki/Options#custom-css">?</a>
 		<a class="floatRight" href="https://github.com/aridacity/imageData/blob/master/presets.css">CSS presets</a>
 	</h4>
 	<textarea id="style" rows="5" spellcheck="false"></textarea>

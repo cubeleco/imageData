@@ -8,52 +8,8 @@
 //lastHeight: last hovered image height for image finishing onload
 var holdEnableDown, data, img, lastHeight, delayTimeout;
 
-	//helper functions
-//round num to #digits after the decimal point
-//avoids trailing 0s of Number.toFixed()
-function roundToPrecision(num) {
-	//avoid divide by 0
-	if(prefs.fsprecision <= 0)
-		return Math.round(num);
-	return Math.round(num * prefs.fsprecision) / prefs.fsprecision;
-}
-//converts a number in bytes to a human readable string
-function getHumanReadable(bytes) {
-	const units = [' B', ' kB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB'];
-	let i = 0;
-	for(; bytes > prefs.fsdivision; i++)
-		bytes /= prefs.fsdivision;
-	//round to fsprecision #decimal places and add size unit
-	return roundToPrecision(bytes) + units[i];
-}
-function readImgHeader(event) {
-	if(event.target.status !== 200)
-		return;
-
-	let sizeDiv = data.lastElementChild;
-	let bytes = Number(event.target.getResponseHeader('Content-Length'));
-	if(sizeDiv.id === 'imgDataSize' && bytes > 0)
-		sizeDiv.textContent = getHumanReadable(bytes);
-}
-function getFileSize(keepOld) {
-	//don't get size when disabled
-	if(!prefs.enabled || prefs.fsdivision < 0 || img === undefined || img.src === '')
-		return;
-	//keep if filesize already exists
-	if(keepOld && data.lastElementChild.textContent !== '')
-		return;
-
-	let xhr = new XMLHttpRequest();
-	xhr.addEventListener('load', readImgHeader);
-	xhr.open('HEAD', img.src, true);
-	xhr.send();
-}
-function appendTextLine(node, text) {
-	node.appendChild(document.createTextNode(text));
-	node.appendChild(document.createElement('br'));
-}
 //add div to page
-function placeData() {
+function placeDiv() {
 	switch(prefs.position) {
 		case 1: //static
 		case 2: //cursor
@@ -77,7 +33,7 @@ function imgHover(event) {
 	//hide data if not an image
 	if(event.target.tagName.toLowerCase() !== 'img') {
 		//avoid hiding on hovering data ie small images
-		if(event.target.id !== 'imgData' && event.target.id !== 'imgDataSize')
+		if(event.target.id !== 'imgData' && event.target.parentElement.id !== 'imgData')
 			displayData(false);
 		return;
 	}
@@ -105,9 +61,9 @@ function imgHover(event) {
 		//avoid getting same data
 		if(event.target.src === img.src && event.target.naturalHeight === lastHeight) {
 			//image may be reused or finished loading
-			placeData();
+			placeDiv();
 			//enabled may have changed on different page
-			getFileSize(true);
+			getHeader(true);
 			return;
 		}
 		//remove old listener
@@ -120,32 +76,11 @@ function imgHover(event) {
 	//dont add or place data before prefs have loaded
 	if(prefs.enabled === undefined)
 		return;
-	//clear and set data div container
-	data.textContent = '';
-
-	//get file extension and image resolution
-	let ext = /jpe?g|a?png|gif|webp|tiff?|bmp|svg|bpg|ico|cur/i.exec( img.src.substr(img.src.lastIndexOf('.')+1) );
-	let fullRes = img.naturalWidth + '\u00D7' + img.naturalHeight + (ext? '\xa0' + ext[0] : '');
-	//add first line to div
-	appendTextLine(data, fullRes);
-
-	//add alt text if pref enabled and if present
-	if(prefs.alt && img.alt) {
-		appendTextLine(data, img.alt);
-	}
-
-	//display scaled dimensions if they differ from original
-	if(prefs.scale && (img.width !== img.naturalWidth && img.height !== img.naturalHeight)) {
-		appendTextLine(data, img.width + '\u2922' + img.height);
-	}
-	//add placeholder for filesize
-	let size = document.createElement('div');
-	size.id = 'imgDataSize';
-	data.appendChild(size);
 	
 	//put data on page and force request filesize header
-	placeData();
-	getFileSize(false);
+	getData();
+	placeDiv();
+	getHeader(false);
 }
 function curMove(event) {
 	if(prefs.curTop)
@@ -206,6 +141,7 @@ function setPrefs(storage) {
 	//add default style attributes to hopefully avoid being affected by the page's styles
 	data.style.cssText = 'z-index: 2147483647 !important; overflow: auto; clear: both; line-height: normal; float: none; width: auto; height: auto; position: ' + pos + prefs.style;
 	//displayData(prefs.enabled);
+	appendData();
 
 	//reload data if img hovered before prefs were loaded
 	if(img !== undefined) {
@@ -222,14 +158,15 @@ function setPrefs(storage) {
 	}
 }
 function enabledChange(changes) {
-	if(changes.enabled.newValue !== undefined) {
-		prefs.enabled = changes.enabled.newValue;
-		//avoid change from different tab
-		if(document.hasFocus()) {
-			displayData(prefs.enabled);
-			//get filesize if it has not been set yet
-			getFileSize(true);
-		}
+	//only update on enabled change
+	if(changes.enabled === undefined || changes.enabled.newValue === undefined)
+		return;
+	prefs.enabled = changes.enabled.newValue;
+	//avoid change from different tab
+	if(document.hasFocus()) {
+		displayData(prefs.enabled);
+		//get filesize if it has not been set yet
+		getHeader(true);
 	}
 }
 function init() {

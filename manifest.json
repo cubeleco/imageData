@@ -1,45 +1,45 @@
 {
-	"manifest_version": 2,
-	"name": "Image Data",
-	"version": "2.2",
-	"description": "Show image resolution, file type, and file size on mouse over",
+"manifest_version": 2,
+"name": "Image Data",
+"version": "2.3",
+"description": "Show image resolution, file type, and file size on mouse over",
 
-	"applications": {
-		"gecko": {
-			"id": "{b8ecb56e-f778-4df4-962a-52974b36abdd}",
-			"strict_min_version": "48.0"
-		}
-	},
+"browser_specific_settings": {
+	"gecko": {
+		"id": "{b8ecb56e-f778-4df4-962a-52974b36abdd}",
+		"strict_min_version": "48.0"
+	}
+},
 
-	"browser_action": {
-		"default_icon": {
-			"48": "icons/thumb-48.png"
-		}
-	},
-	"icons": {
+"browser_action": {
+	"default_icon": {
 		"48": "icons/thumb-48.png"
-	},
-	"commands": {
-		"_execute_browser_action": {
-			"suggested_key": {
-				"default": "Ctrl+Alt+X"
-			},
-			"description": "Toggle extension"
-		}
-	},
+	}
+},
+"icons": {
+	"48": "icons/thumb-48.png"
+},
+"commands": {
+	"_execute_browser_action": {
+		"suggested_key": {
+			"default": "Shift+Alt+X"
+		},
+		"description": "Toggle extension"
+	}
+},
 
-	"background": {
-		"scripts": ["background.js"]
-	},
-	"content_scripts": [{
-		"matches": ["<all_urls>"],
-		"js": ["defaults.js", "imgdata.js"],
-		"run_at": "document_start"
-	}],
+"background": {
+	"scripts": ["background.js"]
+},
+"content_scripts": [{
+	"matches": ["<all_urls>"],
+	"js": ["defaults.js", "imgdata.js"],
+	"run_at": "document_start"
+}],
 
-	"options_ui": {
-		"page": "options.html"
-	},
+"options_ui": {
+	"page": "options.html"
+},
 
-	"permissions": ["<all_urls>", "storage"]
+"permissions": ["<all_urls>", "storage"]
 }
