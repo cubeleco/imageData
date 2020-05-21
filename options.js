@@ -5,8 +5,8 @@ function displayElem(id, isVisible) {
 	document.getElementById(id).style.display = isVisible ? 'inline' : 'none';
 }
 function autoGrow(event) {
-	event.target.style.height = '5px';
-	event.target.style.height = (event.target.scrollHeight + 10) + 'px';
+	event.target.style.height = 'auto';
+	event.target.style.height = (event.target.scrollHeight) + 'px';
 }
 //save input val using its id as a name
 function saveValue(event) {
@@ -109,20 +109,18 @@ function posUpdate(event) {
 	document.getElementById('offX').disabled = disabled;
 	document.getElementById('offY').disabled = disabled;
 }
-function sizeUpdate(event) {
-	const enabled = Number(event.target.value) > 0;
-	document.getElementById('fsprecision').disabled = !enabled;
-}
 function doNothing() {}
 
 
 function setPrefs(storage) {
+	reset = false;
 	prefs = storage;
 	//set up for data preview
 	data = document.getElementById('previewDiv');
 	img = document.createElement('img');
 	img.src = chrome.runtime.getURL('icons/thumb-48.png');
 	img.alt = 'Preview alt text';
+	img.addEventListener('load', orderUpdate);
 
 	//restore saved options
 	document.getElementById('position').value = storage.position;
@@ -136,13 +134,11 @@ function setPrefs(storage) {
 	document.getElementById('offX').value = storage.offX;
 	document.getElementById('offY').value = storage.offY;
 
-	autoGrow({target: document.getElementById('display')});
-	autoGrow({target: document.getElementById('style')});
+	window.setTimeout(autoGrow, 1000, {target: document.getElementById('display')});
+	window.setTimeout(autoGrow, 1000, {target: document.getElementById('style')});
 	//update page with saved options
-	orderUpdate();
 	styleUpdate({target:{value: storage.style}});
 	posUpdate({target:{value: storage.position}});
-	sizeUpdate({target:{value: storage.fsdivision}});
 	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
 }
 function restoreOptions() {
@@ -156,14 +152,19 @@ function orderChange(changes) {
 	if(changes.enabled || changes.order)
 		orderUpdate();
 }
-function factoryReset() {
-	if(window.confirm('Reset all options, shortcuts, data JSON, and custom CSS to factory defaults?')) {
+function cancelReset(target) {
+	target.textContent = 'Default options';
+}
+function factoryReset(event) {
+	if(event.target.textContent === 'Confirm') {
 		//clear storage and reload page
 		chrome.storage.local.clear();
 		//not available in chrome
-		chrome.commands.reset('_execute_browser_action');
+		//chrome.commands.reset('_execute_browser_action');
 		window.location.reload();
-	}
+	} else
+	event.target.textContent = 'Confirm';
+	window.setTimeout(cancelReset, 2000, event.target);
 }
 
 //save options
@@ -181,7 +182,6 @@ document.getElementById('offY').addEventListener('input', saveNumber);
 //options updating the page
 document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('position').addEventListener('input', posUpdate);
-document.getElementById('fsdivision').addEventListener('input', sizeUpdate);
 document.getElementById('style').addEventListener('input', styleUpdate);
 document.getElementById('display').addEventListener('input', autoGrow);
 document.getElementById('style').addEventListener('input', autoGrow);

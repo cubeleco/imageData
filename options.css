@@ -3,6 +3,9 @@
 		color: black;
 		background-color: white;
 	}
+	button, input, select, textarea {
+		border: 2px outset #c2c2c2;
+	}
 }
 @media (prefers-color-scheme: dark) {
 	html, body {
@@ -13,7 +16,6 @@
 		color: white;
 		background-color: #202020;
 		caret-color: white;
-		border-radius: 2px;
 		border: 2px outset #656565;
 	}
 	::selection {
@@ -28,6 +30,7 @@
 }
 
 body {
+	min-width: 500px;
 	padding: .5em;
 	overflow: hidden;
 }
