@@ -29,8 +29,13 @@
 	}
 }
 
+/*overrides chrome default size and avoid setting for android*/
+@media (pointer: fine) {
+	body {
+		min-width: 500px;
+	}
+}
 body {
-	min-width: 500px;
 	padding: .5em;
 	overflow: hidden;
 }
@@ -82,6 +87,7 @@ textarea.error {
 }
 .fixedWidth {
 	display: inline-block;
+	max-width: 55%;
 	width: 14em;
 	margin-right: .2em;
 }

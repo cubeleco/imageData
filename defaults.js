@@ -1,3 +1,7 @@
+//data: dom element to display image data
+//img: last hovered image to avoid loading same data
+var data, img, haveHeader;
+
 //enums of image data to display
 const dataEnum = {
 	width: 0,
@@ -61,6 +65,7 @@ function getHumanReadable(bytes) {
 function readImgHeader(event) {
 	if(event.target.status !== 200)
 		return;
+	haveHeader = true;
 
 	let sizeElem = document.getElementById('imgData-size');
 	let mimeElem = document.getElementById('imgData-mime');
@@ -78,11 +83,8 @@ function readImgHeader(event) {
 }
 function getHeader(keepOld) {
 	//don't get size when disabled
-	if(!prefs.enabled || !prefs.getHeader || img === undefined || img.src === '')
-		return;
 	//keep if filesize already exists
-	//TODO do in getData
-	if(keepOld && document.getElementById('imgData-size').textContent !== '')
+	if(!prefs.enabled || !prefs.getHeader || img === undefined || img.src === '' || (keepOld && haveHeader))
 		return;
 
 	let xhr = new XMLHttpRequest();
@@ -112,6 +114,8 @@ function appendData() {
 //fill spans with data
 function getData() {
 	const srcUrl = new URL(img.src);
+	//mark to get new header
+	haveHeader = false;
 
 	for(let i=0, e=0; i < prefs.order.length; i++, e++) {
 		let txt;
@@ -156,7 +160,8 @@ function getData() {
 			default: //count only elements
 				e--;
 		}
-		if(txt !== undefined)
+		if(txt !== undefined) {
 			data.children[e].textContent = txt;
+		}
 	}
 }

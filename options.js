@@ -1,5 +1,3 @@
-//preview data and img
-var data, img;
 //display or hide element by id 
 function displayElem(id, isVisible) {
 	document.getElementById(id).style.display = isVisible ? 'inline' : 'none';
@@ -25,18 +23,18 @@ function saveChecked(event) {
 //get data order and parameter pairs
 function saveOrder(event) {
 	saveValue(event);
-	var header = false;
-	var data;
+	let header = false;
+	let order;
 	try {
-		data = JSON.parse(event.target.value);
+		order = JSON.parse(event.target.value);
 	} catch(e) {
 		event.target.classList.add('error');
 		return;
 	}
 	event.target.classList.remove('error');
 	//find if any header values should be requested
-	for(let i=data.length - 1; i >= 0; i--) {
-		switch(dataEnum[data[i]]) {
+	for(let i=order.length - 1; i >= 0; i--) {
+		switch(dataEnum[order[i]]) {
 			case dataEnum.size:
 			case dataEnum.mime:
 			case dataEnum.modified:
@@ -44,19 +42,15 @@ function saveOrder(event) {
 				break;
 		}
 	}
-	chrome.storage.local.set({ getHeader: header, order: data });
+	chrome.storage.local.set({ getHeader: header, order: order });
 }
 function saveStyle(event) {
-	let style = document.createElement('div').style;
-	//create style object from css text
-	style.cssText = event.target.value;
-
 	//save options to storage
 	//if position properties defined, avoid cursor follow on that axis
 	chrome.storage.local.set({
 		style: event.target.value,
-		curLeft: style.left === '' && style.right === '',
-		curTop: style.top === '' && style.bottom === ''
+		curLeft: data.style.left === '' && data.style.right === '',
+		curTop: data.style.top === '' && data.style.bottom === ''
 	});
 }
 function saveKey(event) {
@@ -102,18 +96,15 @@ function keyUpdate(event) {
 	if(modKeys.indexOf(lowkey) < 0)
 		event.target.value += lowkey;
 }
-function styleUpdate(event) { document.getElementById('previewDiv').style.cssText = event.target.value; }
+function styleUpdate(event) { data.style.cssText = event.target.value; }
 function posUpdate(event) {
 	const num = Number(event.target.value);
 	const disabled = (num !== 2 && num !== 5);
 	document.getElementById('offX').disabled = disabled;
 	document.getElementById('offY').disabled = disabled;
 }
-function doNothing() {}
-
 
 function setPrefs(storage) {
-	reset = false;
 	prefs = storage;
 	//set up for data preview
 	data = document.getElementById('previewDiv');
@@ -139,7 +130,7 @@ function setPrefs(storage) {
 	//update page with saved options
 	styleUpdate({target:{value: storage.style}});
 	posUpdate({target:{value: storage.position}});
-	keyUpdate({target: document.getElementById('holdEnableKey'), preventDefault: doNothing, ...storage.holdEnableKey});
+	keyUpdate({target: document.getElementById('holdEnableKey'), ...storage.holdEnableKey});
 }
 function restoreOptions() {
 	loadPrefs(setPrefs);
@@ -162,7 +153,7 @@ function factoryReset(event) {
 		//not available in chrome
 		//chrome.commands.reset('_execute_browser_action');
 		window.location.reload();
-	} else
+	}
 	event.target.textContent = 'Confirm';
 	window.setTimeout(cancelReset, 2000, event.target);
 }
@@ -173,8 +164,10 @@ document.getElementById('position').addEventListener('input', saveNumber);
 document.getElementById('fsdivision').addEventListener('input', saveNumber);
 document.getElementById('fsprecision').addEventListener('input', savePrecision);
 document.getElementById('delay').addEventListener('input', saveNumber);
-document.getElementById('display').addEventListener('input', saveOrder);
+//style needs to be calculated before saved
+document.getElementById('style').addEventListener('input', styleUpdate);
 document.getElementById('style').addEventListener('input', saveStyle);
+document.getElementById('display').addEventListener('input', saveOrder);
 document.getElementById('minWidth').addEventListener('input', saveNumber);
 document.getElementById('minHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
@@ -182,7 +175,6 @@ document.getElementById('offY').addEventListener('input', saveNumber);
 //options updating the page
 document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('position').addEventListener('input', posUpdate);
-document.getElementById('style').addEventListener('input', styleUpdate);
 document.getElementById('display').addEventListener('input', autoGrow);
 document.getElementById('style').addEventListener('input', autoGrow);
 

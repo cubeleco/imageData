@@ -3,23 +3,22 @@
 
 	//global variables
 //holdEnableDown: if holdEnableKey is held down
-//data: dom element to display image data
-//img: last hovered image to avoid loading same data
 //lastHeight: last hovered image height for image finishing onload
-var holdEnableDown, data, img, lastHeight, delayTimeout;
+//delayTimeout: timeout index for delayed display of data
+var holdEnableDown, lastHeight, delayTimeout;
 
 //add div to page
 function placeDiv() {
 	switch(prefs.position) {
-		case 1: //static
+		case 1: //fixed
 		case 2: //cursor
 		case 5: //tooltip
 			document.body.appendChild(data);
 			break;
-		case 4: //below
+		case 4: //after
 			img.parentNode.appendChild(data);
 			break;
-		default: //on top and above
+		default: //over and before
 			img.parentNode.insertBefore(data, img);
 	}
 }
@@ -44,11 +43,11 @@ function imgHover(event) {
 	}
 	//dont change display incase mouse left img before onload
 	if(event.type !== 'load') {
-		displayData(false);
-		window.clearTimeout(delayTimeout);
 		//show data after delay if set
-		if(prefs.enabled && prefs.delay > 0)
+		if(prefs.enabled && prefs.delay > 0) {
+			window.clearTimeout(delayTimeout);
 			delayTimeout = window.setTimeout(displayData, prefs.delay, true);
+		}
 		else
 			displayData(prefs.enabled);
 
@@ -122,10 +121,10 @@ function keyUp(event) {
 function setPrefs(storage) {
 	prefs = storage;
 
-	//default:0 on top
+	//default:0 over
 	let pos = 'absolute;';
 	switch(prefs.position) {
-		case 1: //static
+		case 1: //fixed
 			pos = 'fixed;top:3px;left:3px;';
 			break;
 		case 2: //cursor
@@ -133,14 +132,14 @@ function setPrefs(storage) {
 		case 5: //tooltip
 			pos = 'fixed;';
 			break;
-		case 3: //above
-		case 4: //below
+		case 3: //before
+		case 4: //after
 			pos = 'static;';
 			break;
 	}
 	//add default style attributes to hopefully avoid being affected by the page's styles
 	data.style.cssText = 'z-index: 2147483647 !important; overflow: auto; clear: both; line-height: normal; float: none; width: auto; height: auto; position: ' + pos + prefs.style;
-	//displayData(prefs.enabled);
+	displayData(false);
 	appendData();
 
 	//reload data if img hovered before prefs were loaded
@@ -177,6 +176,7 @@ function init() {
 
 	//start image hover before page or prefs are loaded
 	document.addEventListener('mouseover', imgHover);
+	document.addEventListener('touchstart', imgHover);
 	//reload preferences from addon local storage
 	loadPrefs(setPrefs);
 }
