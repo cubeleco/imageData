@@ -51,8 +51,8 @@ label {
 	margin: .15em 0;
 }
 button, input, select, textarea {
-	padding: 0 .2em;
-	border-radius: 2px;
+	padding: 0 .3em;
+	border-radius: 3px;
 }
 input:invalid:not(#fsprecision) {
 	box-shadow: none;
@@ -61,7 +61,7 @@ input:invalid:not(#fsprecision) {
 	border: 2px outset #0af;
 }
 button {
-	padding: .1em .8em;
+	padding: .1em .7em;
 }
 textarea {
 	width: 100%;
@@ -70,9 +70,7 @@ textarea {
 	overflow: hidden;
 }
 input[type="text"] {
-	width: 11em;
-	padding: 0 .7em;
-	margin-right: .2em;
+	padding: 0 .5em;
 }
 input[type="number"] {
 	width: 4em;

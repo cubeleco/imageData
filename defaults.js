@@ -16,7 +16,8 @@ const dataEnum = {
 	alt: 9,
 	mime: 10,
 	modified: 11,
-	br: 12
+	br: 12,
+	perfSize: 13
 };
 //extension option storage
 var prefs = {
@@ -34,11 +35,11 @@ var prefs = {
 	curTop: true,
 	minWidth: 0,
 	minHeight: 0,
-	getHeader: true,
-	order: ['width','\u00d7','height','\u00a0','mime','br','size'],
+	getHeader: false,
+	order: ['width','\u00d7','height','\u00a0','extension','br','perfSize'],
 display: `[
-"width", "\u00d7", "height", "\u00a0", "mime",
-"br", "size"
+"width", "\u00d7", "height", "\u00a0", "extension",
+"br", "perfSize"
 ]`
 };
 function loadPrefs(callback) {
@@ -67,9 +68,10 @@ function readImgHeader(event) {
 		return;
 	haveHeader = true;
 
-	let sizeElem = document.getElementById('imgData-size');
-	let mimeElem = document.getElementById('imgData-mime');
-	let modifiedElem = document.getElementById('imgData-modified');
+	//get elements from imgData div
+	let sizeElem = data.querySelector('#imgData-size');
+	let mimeElem = data.querySelector('#imgData-mime');
+	let modifiedElem = data.querySelector('#imgData-modified');
 
 	let bytes = Number(event.target.getResponseHeader('content-length'));
 	const type = event.target.getResponseHeader('content-type');
@@ -77,6 +79,7 @@ function readImgHeader(event) {
 	if(sizeElem !== null && bytes > 0)
 		sizeElem.textContent = getHumanReadable(bytes);
 	if(mimeElem !== null)
+		//remove image/ part of mime
 		mimeElem.textContent = type.substring(type.lastIndexOf('/')+1);
 	if(modifiedElem !== null)
 		modifiedElem.textContent = modified;
@@ -95,28 +98,27 @@ function getHeader(keepOld) {
 //prepare data div according to prefs.order
 function appendData() {
 	for(let i=0; i < prefs.order.length; i++) {
-		if(typeof prefs.order[i] !== 'string')
+		const orderStr = prefs.order[i];
+		let elem;
+
+		if(typeof orderStr !== 'string')
 			continue;
-		//if enum
-		if(typeof dataEnum[prefs.order[i]] === 'number') {
-			if(prefs.order[i] === 'br')
-				data.appendChild(document.createElement('br'));
+		//if matches a data enum
+		if(dataEnum[orderStr] >= 0) {
+			if(orderStr === 'br')
+				elem = document.createElement('br');
 			else {
 				//add data according to its id
-				let span = document.createElement('span');
-				span.id = 'imgData-' + prefs.order[i];
-				data.appendChild(span);
+				elem = document.createElement('span');
+				elem.id = 'imgData-' + orderStr;
 			}
 		} else
-			data.appendChild(document.createTextNode(prefs.order[i]));
+			elem = document.createTextNode(orderStr);
+		data.appendChild(elem);
 	}
 }
 //fill spans with data
-function getData() {
-	const srcUrl = new URL(img.src);
-	//mark to get new header
-	haveHeader = false;
-
+function getData(keepHeader) {
 	for(let i=0, e=0; i < prefs.order.length; i++, e++) {
 		let txt;
 		//add data according to its id
@@ -137,13 +139,14 @@ function getData() {
 				txt = img.naturalWidth * img.naturalHeight;
 				break;
 			case dataEnum.extension:
-				txt = (/jpe?g|a?png|gif|webp|tiff?|bmp|svg|bpg|ico|cur/i.exec( srcUrl.pathname.substring(srcUrl.pathname.lastIndexOf('.')+1) ))[0];
+				const ext = /jpe?g|a?png|webp|gif|avif|tiff?|bmp|svg|bpg|ico|cur/i.exec( img.src.substring(img.src.lastIndexOf('.')+1) );
+				txt = ext ? ext[0] : '';
 				break;
 			case dataEnum.name:
-				txt = srcUrl.pathname.substring(srcUrl.pathname.lastIndexOf('/')+1, srcUrl.pathname.lastIndexOf('.'));
+				txt = img.src.substring(img.src.lastIndexOf('/')+1, img.src.lastIndexOf('.'));
 				break;
 			case dataEnum.domain:
-				txt = srcUrl.hostname;
+				txt = (new URL(img.src)).hostname;
 				break;
 			case dataEnum.alt:
 				txt = img.alt;
@@ -152,12 +155,22 @@ function getData() {
 			case dataEnum.mime:
 			case dataEnum.size:
 			case dataEnum.modified:
-				txt = '';
+				if(!keepHeader)
+					txt = '';
 				break;
 			//ignore br elements
 			case dataEnum.br:
 				break;
-			default: //count only elements
+			case dataEnum.perfSize:
+				if(!window.performance)
+					break;
+				const perf = window.performance.getEntriesByName(img.src);
+
+				//clear text if failed (blob:)
+				txt = perf.length > 0 ? getHumanReadable(perf[0].decodedBodySize) : '';
+				break;
+			//dont count text nodes
+			default:
 				e--;
 		}
 		if(txt !== undefined) {

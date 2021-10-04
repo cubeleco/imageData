@@ -59,6 +59,8 @@ function imgHover(event) {
 	if(img !== undefined) {
 		//avoid getting same data
 		if(event.target.src === img.src && event.target.naturalHeight === lastHeight) {
+			//prefSize needs to update after load; keep header after first load
+			getData(true);
 			//image may be reused or finished loading
 			placeDiv();
 			//enabled may have changed on different page
@@ -76,8 +78,10 @@ function imgHover(event) {
 	if(prefs.enabled === undefined)
 		return;
 	
+	//mark to get new header
+	haveHeader = false;
 	//put data on page and force request filesize header
-	getData();
+	getData(false);
 	placeDiv();
 	getHeader(false);
 }

@@ -10,14 +10,17 @@
 
 <body>
 	<div id="optionsNote">
-		<button id="factoryReset" class="floatRight">Default options</button>
+		<button id="factoryReset" class="floatRight" title="Reset all addon options, shortcuts, json, and css to default values. Click twice to confirm.">
+			Default options
+		</button>
 		The following options are saved automatically, but tabs need to be refreshed to apply changes.
 	</div>
 	<h4>Shortcuts</h4>
 	<label title="Keyboard shortcut to show or hide image data for a moment, while held down. Press Escape to disable the shortcut.">
-		<input id="holdEnableKey" type="text" readonly="true" placeholder="Type a shortcut">
+		<input id="holdEnableKey" class="fixedWidth" type="text" readonly="true" placeholder="Type a shortcut">
 		<span>Quick toggle</span>
 	</label><br>
+
 	<h4>Options</h4>
 	<label title="Where the image data div will be placed on the webpage. Over image is placed within the image's parent container (position: absolute). Fixed, Follow cursor, and Tool tip do not scroll with the page (position: fixed). Before and After image are placed inline and shifts other elements on the page (position: static).">
 		<div class="fixedWidth"><select id="position">
@@ -50,11 +53,13 @@
 		<div class="fixedWidth"><input id="offX" type="number"> &times; <input id="offY" type="number"></div>
 		<span>Pixel offset from cursor</span>
 	</label><br>
+
 	<h4 title="What image data is displayed, and its order">
 		Data JSON
 		<a class="helpLink" href="https://github.com/cubeleco/imageData/wiki/Options#data-json">?</a>
 	</h4>
 	<textarea id="display" rows="4" spellcheck="false"></textarea>
+
 	<h4>
 		Custom CSS
 		<a class="helpLink" href="https://github.com/cubeleco/imageData/wiki/Options#custom-css">?</a>

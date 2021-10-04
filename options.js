@@ -71,7 +71,7 @@ function orderUpdate() {
 	if(!prefs.enabled)
 		return;
 	appendData();
-	getData();
+	getData(false);
 	getHeader(false);
 }
 //set text field value using shortcut key modifiers (modifier order doesn't matter)
