@@ -36,6 +36,7 @@ var prefs = {
 	minWidth: 0,
 	minHeight: 0,
 	getHeader: false,
+	newtabOnly: false,
 	order: ['width','\u00d7','height','\u00a0','extension','br','perfSize'],
 display: `[
 "width", "\u00d7", "height", "\u00a0", "extension",

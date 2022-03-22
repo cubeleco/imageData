@@ -59,8 +59,8 @@ function imgHover(event) {
 	if(img !== undefined) {
 		//avoid getting same data
 		if(event.target.src === img.src && event.target.naturalHeight === lastHeight) {
-			//prefSize needs to update after load; keep header after first load
-			getData(true);
+			//prefSize needs to update sightly delayed after load; keep header after first load
+			window.setTimeout(getData, 1, true);
 			//image may be reused or finished loading
 			placeDiv();
 			//enabled may have changed on different page
@@ -77,7 +77,7 @@ function imgHover(event) {
 	//dont add or place data before prefs have loaded
 	if(prefs.enabled === undefined)
 		return;
-	
+
 	//mark to get new header
 	haveHeader = false;
 	//put data on page and force request filesize header
@@ -123,6 +123,45 @@ function keyUp(event) {
 
 	//preferences functions
 function setPrefs(storage) {
+	const isNewTab = document.body.childElementCount === 1 && document.body.firstElementChild.tagName.toLowerCase() === 'img';
+	//check for page not in a new tab
+	if(storage.newtabOnly && !isNewTab) {
+		//remove div and eventlisteners
+		if(img !== undefined)
+			img.removeEventListener('load', imgHover);
+
+		document.removeEventListener('mouseover', imgHover);
+		document.removeEventListener('touchstart', imgHover);
+		chrome.storage.onChanged.removeListener(enabledChange);
+		//free up memory
+		data = undefined;
+		img = undefined;
+		haveHeader = undefined;
+		prefs = undefined;
+		loadPrefs = undefined;
+		roundToPrecision = undefined;
+		getHumanReadable = undefined;
+		readImgHeader = undefined;
+		getHeader = undefined;
+		appendData = undefined;
+		getData = undefined;
+
+		holdEnableDown = undefined;
+		lastHeight = undefined;
+		delayTimeout = undefined;
+		placeDiv = undefined;
+		displayData = undefined;
+		imgHover = undefined;
+		curMove = undefined;
+		toggleState = undefined;
+		keyMatch = undefined;
+		keyDown = undefined;
+		keyUp = undefined;
+		init = undefined;
+		enabledChange = undefined;
+		setPrefs = undefined;
+		return;
+	}
 	prefs = storage;
 
 	//default:0 over
@@ -146,6 +185,10 @@ function setPrefs(storage) {
 	displayData(false);
 	appendData();
 
+	//force display on newtab
+	if(isNewTab) {
+		img = document.body.firstElementChild;
+	}
 	//reload data if img hovered before prefs were loaded
 	if(img !== undefined) {
 		//TODO no easy way to get clientX cursor coords

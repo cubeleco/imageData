@@ -1,7 +1,7 @@
 {
 "manifest_version": 2,
 "name": "Image Data",
-"version": "2.5",
+"version": "2.6",
 "description": "Show image resolution, file type, and file size on mouse over",
 
 "browser_specific_settings": {

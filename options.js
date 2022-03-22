@@ -4,7 +4,7 @@ function displayElem(id, isVisible) {
 }
 function autoGrow(event) {
 	event.target.style.height = 'auto';
-	event.target.style.height = (event.target.scrollHeight) + 'px';
+	event.target.style.height = (event.target.scrollHeight + 5) + 'px';
 }
 //save input val using its id as a name
 function saveValue(event) {
@@ -124,6 +124,7 @@ function setPrefs(storage) {
 	document.getElementById('minHeight').value = storage.minHeight;
 	document.getElementById('offX').value = storage.offX;
 	document.getElementById('offY').value = storage.offY;
+	document.getElementById('newtabOnly').checked = storage.newtabOnly;
 
 	window.setTimeout(autoGrow, 1000, {target: document.getElementById('display')});
 	window.setTimeout(autoGrow, 1000, {target: document.getElementById('style')});
@@ -172,6 +173,7 @@ document.getElementById('minWidth').addEventListener('input', saveNumber);
 document.getElementById('minHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
 document.getElementById('offY').addEventListener('input', saveNumber);
+document.getElementById('newtabOnly').addEventListener('input', saveChecked);
 //options updating the page
 document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('position').addEventListener('input', posUpdate);
