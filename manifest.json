@@ -1,7 +1,7 @@
 {
 "manifest_version": 2,
 "name": "Image Data",
-"version": "2.6",
+"version": "2.6.1",
 "description": "Show image resolution, file type, and file size on mouse over",
 
 "browser_specific_settings": {
@@ -34,7 +34,7 @@
 "content_scripts": [{
 	"matches": ["<all_urls>"],
 	"js": ["defaults.js", "imgdata.js"],
-	"run_at": "document_start"
+	"run_at": "document_end"
 }],
 
 "options_ui": {

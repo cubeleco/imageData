@@ -59,7 +59,7 @@ function imgHover(event) {
 	if(img !== undefined) {
 		//avoid getting same data
 		if(event.target.src === img.src && event.target.naturalHeight === lastHeight) {
-			//prefSize needs to update sightly delayed after load; keep header after first load
+			//perfSize needs to update sightly delayed after load; keep header after first load
 			window.setTimeout(getData, 1, true);
 			//image may be reused or finished loading
 			placeDiv();
@@ -80,7 +80,7 @@ function imgHover(event) {
 
 	//mark to get new header
 	haveHeader = false;
-	//put data on page and force request filesize header
+	//put data on page and force header request
 	getData(false);
 	placeDiv();
 	getHeader(false);
@@ -226,6 +226,8 @@ function init() {
 	document.addEventListener('touchstart', imgHover);
 	//reload preferences from addon local storage
 	loadPrefs(setPrefs);
+	//set prefs as not loaded for imgHover
+	prefs.enabled = undefined;
 }
 init();
 chrome.storage.onChanged.addListener(enabledChange);
