@@ -1,7 +1,7 @@
 {
-"manifest_version": 2,
+"manifest_version": 3,
 "name": "Image Data",
-"version": "2.6.1",
+"version": "2.6.2",
 "description": "Show image resolution, file type, and file size on mouse over",
 
 "browser_specific_settings": {
@@ -11,7 +11,7 @@
 	}
 },
 
-"browser_action": {
+"action": {
 	"default_icon": {
 		"48": "icons/thumb-48.png"
 	}
@@ -19,17 +19,16 @@
 "icons": {
 	"48": "icons/thumb-48.png"
 },
+
 "commands": {
-	"_execute_browser_action": {
-		"suggested_key": {
-			"default": "Shift+Alt+X"
-		},
-		"description": "Toggle extension"
+	"_execute_action": {
+		"description": "Toggle Display"
 	}
 },
 
 "background": {
-	"scripts": ["background.js"]
+	"service_worker": "background.js"
+	//"scripts": ["background.js"]
 },
 "content_scripts": [{
 	"matches": ["<all_urls>"],
@@ -41,5 +40,6 @@
 	"page": "options.html"
 },
 
-"permissions": ["<all_urls>", "storage"]
+"host_permissions": ["<all_urls>"],
+"permissions": ["storage"]
 }

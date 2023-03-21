@@ -40,9 +40,13 @@ body {
 	overflow: hidden;
 }
 a {
-	color: #0af;
+	color: white;
+	background-color: #0af;
 	font-weight: bold;
 	text-decoration: none;
+	padding: 0 0.4em;
+	border: 2px outset #0af;
+	border-radius: 15px;
 }
 h4 {
 	margin: 1.5em 0 .15em 0;

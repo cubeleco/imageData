@@ -32,10 +32,11 @@ function imgHover(event) {
 	//hide data if not an image
 	if(event.target.tagName.toLowerCase() !== 'img') {
 		//avoid hiding on hovering data ie small images
-		if(event.target.id !== 'imgData' && event.target.parentElement.id !== 'imgData')
+		if(!event.target.id.startsWith('imgData'))
 			displayData(false);
 		return;
 	}
+
 	//hide if img is smaller than minimum
 	if(event.target.width < prefs.minWidth || event.target.height < prefs.minHeight) {
 		displayData(false);
@@ -215,6 +216,7 @@ function enabledChange(changes) {
 		getHeader(true);
 	}
 }
+
 function init() {
 	//set global vars
 	holdEnableDown = false;
@@ -224,9 +226,10 @@ function init() {
 	//start image hover before page or prefs are loaded
 	document.addEventListener('mouseover', imgHover);
 	document.addEventListener('touchstart', imgHover);
+
 	//reload preferences from addon local storage
 	loadPrefs(setPrefs);
-	//set prefs as not loaded for imgHover
+	//set prefs as unloaded for imgHover
 	prefs.enabled = undefined;
 }
 init();

@@ -5,8 +5,8 @@ function toggleState() {
 }
 
 function updateIcon() {
-	chrome.browserAction.setIcon({ path: enabled? 'icons/thumb-48.png' : 'icons/disable-48.png' });
-	chrome.browserAction.setTitle({	title: enabled? 'Image Data (on)' : 'Image Data (off)' });
+	chrome.action.setIcon({ path: enabled? 'icons/thumb-48.png' : 'icons/disable-48.png' });
+	chrome.action.setTitle({ title: enabled? 'Image Data (on)' : 'Image Data (off)' });
 }
 function stateChanged(changes) {
 	//only update on enabled change
@@ -21,7 +21,7 @@ function readStorage(storage) {
 	updateIcon();
 }
 //toggle enabled when toolbar button is clicked
-chrome.browserAction.onClicked.addListener(toggleState);
+chrome.action.onClicked.addListener(toggleState);
 //update on enabled state change
 chrome.storage.onChanged.addListener(stateChanged);
 //on browser startup get prior state
