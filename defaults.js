@@ -43,10 +43,11 @@ display: `[
 "br", "perfSize"
 ]`
 };
-function loadPrefs(callback) {
-	chrome.storage.local.get(prefs, callback);
-}
+
 	//helper functions
+function loadPrefs(callback) {
+	chrome.storage.local.get(prefs).then(callback);
+}
 //round num to #digits after the decimal point
 //avoids trailing 0s of Number.toFixed()
 function roundToPrecision(num) {
