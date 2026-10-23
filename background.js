@@ -1,28 +1,26 @@
-var enabled;
 function toggleState() {
-	enabled = !enabled;
-	chrome.storage.local.set({ enabled: enabled });
+	chrome.storage.local.get({enabled: true}).then((storage) => {
+		chrome.storage.local.set({ enabled: !storage.enabled });
+	});
 }
 
-function updateIcon() {
-	chrome.action.setIcon({ path: enabled? 'icons/thumb-48.png' : 'icons/disable-48.png' });
-	chrome.action.setTitle({ title: enabled? 'Image Data (on)' : 'Image Data (off)' });
+function updateIcon(state) {
+	chrome.action.setIcon({ path: state? 'icons/thumb-48.png' : 'icons/disable-48.png' });
+	chrome.action.setTitle({ title: state? 'Image Data (on)' : 'Image Data (off)' });
 }
 function stateChanged(changes) {
 	//only update on enabled change
 	if(changes.enabled) {
 		//reset to enabled state on factory reset otherwise use newValue
-		enabled = changes.enabled.newValue === undefined ? true : changes.enabled.newValue;
-		updateIcon();
+		updateIcon(changes.enabled.newValue === undefined ? true : changes.enabled.newValue);
 	}
 }
 function readStorage(storage) {
-	enabled = storage.enabled;
-	updateIcon();
+	updateIcon(storage.enabled);
 }
 //toggle enabled when toolbar button is clicked
 chrome.action.onClicked.addListener(toggleState);
 //update on enabled state change
 chrome.storage.onChanged.addListener(stateChanged);
 //on browser startup get prior state
-chrome.storage.local.get({enabled: true}, readStorage);
+chrome.storage.local.get({enabled: true}).then(readStorage);

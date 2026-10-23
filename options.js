@@ -4,8 +4,9 @@ function displayElem(id, isVisible) {
 }
 function autoGrow(event) {
 	event.target.style.height = 'auto';
-	event.target.style.height = (event.target.scrollHeight + 5) + 'px';
+	event.target.style.height = event.target.scrollHeight + 'px';
 }
+
 //save input val using its id as a name
 function saveValue(event) {
 	chrome.storage.local.set({ [event.target.id]: event.target.value });
@@ -22,27 +23,44 @@ function saveChecked(event) {
 }
 //get data order and parameter pairs
 function saveOrder(event) {
-	saveValue(event);
+	//set index for which data to preview
+	currentOrder = Number(event.target.dataset.dx);
 	let header = false;
-	let order;
+	let json;
+	let order = [];
+
 	try {
-		order = JSON.parse(event.target.value);
+		const txt = event.target.value;
+		json = JSON.parse(txt.trim()[0] === '['? txt : `[${txt}]`);
 	} catch(e) {
 		event.target.classList.add('error');
 		return;
 	}
 	event.target.classList.remove('error');
-	//find if any header values should be requested
-	for(let i=order.length - 1; i >= 0; i--) {
-		switch(dataEnum[order[i]]) {
+	for(let i=0; i < json.length; i++) {
+		switch(dataEnum[json[i]]) {
+			//mark if any header values should be requested
 			case dataEnum.size:
 			case dataEnum.mime:
 			case dataEnum.modified:
 				header = true;
+			default:
+				if(dataEnum[json[i]] >= 0)
+					order.push(dataEnum[json[i]]);
+				else
+					order.push(json[i]);
 				break;
 		}
 	}
-	chrome.storage.local.set({ getHeader: header, order: order });
+	//construct order object and save
+	prefs.orders[currentOrder] = {
+		useHeader: header,
+		display: event.target.value,
+		list: order,
+	};
+
+	//console.log(prefs, event.target.value, order);
+	chrome.storage.local.set({orders: prefs.orders});
 }
 function saveStyle(event) {
 	//save options to storage
@@ -106,6 +124,7 @@ function posUpdate(event) {
 
 function setPrefs(storage) {
 	prefs = storage;
+	currentOrder = 0;
 	//set up for data preview
 	data = document.getElementById('previewDiv');
 	img = document.createElement('img');
@@ -118,7 +137,9 @@ function setPrefs(storage) {
 	document.getElementById('fsdivision').value = storage.fsdivision;
 	document.getElementById('fsprecision').value = storage.fsprecision.toString().length - 1;
 	document.getElementById('delay').value = storage.delay;
-	document.getElementById('display').value = storage.display;
+	document.getElementById('display').value = storage.orders[0].display;
+	document.getElementById('displayNewtab').value = storage.orders[1].display;
+	document.getElementById('displayAlt').value = storage.orders[2].display;
 	document.getElementById('style').value = storage.style;
 	document.getElementById('minWidth').value = storage.minWidth;
 	document.getElementById('minHeight').value = storage.minHeight;
@@ -126,12 +147,15 @@ function setPrefs(storage) {
 	document.getElementById('offY').value = storage.offY;
 	document.getElementById('newtabOnly').checked = storage.newtabOnly;
 
-	window.setTimeout(autoGrow, 1000, {target: document.getElementById('display')});
-	window.setTimeout(autoGrow, 1000, {target: document.getElementById('style')});
 	//update page with saved options
 	styleUpdate({target:{value: storage.style}});
 	posUpdate({target:{value: storage.position}});
 	keyUpdate({target: document.getElementById('holdEnableKey'), ...storage.holdEnableKey});
+
+	autoGrow({target: document.getElementById('display')});
+	autoGrow({target: document.getElementById('displayNewtab')});
+	autoGrow({target: document.getElementById('displayAlt')});
+	autoGrow({target: document.getElementById('style')});
 }
 function restoreOptions() {
 	loadPrefs(setPrefs);
@@ -141,7 +165,7 @@ function orderChange(changes) {
 		if(changes[key].newValue !== undefined)
 			prefs[key] = changes[key].newValue;
 	}
-	if(changes.enabled || changes.order)
+	if(changes.enabled || changes.orders)
 		orderUpdate();
 }
 function cancelReset(target) {
@@ -169,6 +193,8 @@ document.getElementById('delay').addEventListener('input', saveNumber);
 document.getElementById('style').addEventListener('input', styleUpdate);
 document.getElementById('style').addEventListener('input', saveStyle);
 document.getElementById('display').addEventListener('input', saveOrder);
+document.getElementById('displayNewtab').addEventListener('input', saveOrder);
+document.getElementById('displayAlt').addEventListener('input', saveOrder);
 document.getElementById('minWidth').addEventListener('input', saveNumber);
 document.getElementById('minHeight').addEventListener('input', saveNumber);
 document.getElementById('offX').addEventListener('input', saveNumber);
@@ -178,6 +204,8 @@ document.getElementById('newtabOnly').addEventListener('input', saveChecked);
 document.getElementById('holdEnableKey').addEventListener('keydown', keyUpdate);
 document.getElementById('position').addEventListener('input', posUpdate);
 document.getElementById('display').addEventListener('input', autoGrow);
+document.getElementById('displayNewtab').addEventListener('input', autoGrow);
+document.getElementById('displayAlt').addEventListener('input', autoGrow);
 document.getElementById('style').addEventListener('input', autoGrow);
 
 chrome.storage.onChanged.addListener(orderChange);

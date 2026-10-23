@@ -1,6 +1,8 @@
 //data: dom element to display image data
-//img: last hovered image to avoid loading same data
-var data, img, haveHeader;
+//img: last hovered image element to avoid loading same data
+//currentOrder: prefs orders array index for display order; one of hover, new tab, or alt
+var data, img, haveHeader, currentOrder;
+const extRex = /jpe?g|a?png|jxl|webp|gif|avif|tiff?|bmp|svg|bpg|ico|cur/i;
 
 //enums of image data to display
 const dataEnum = {
@@ -35,13 +37,30 @@ var prefs = {
 	curTop: true,
 	minWidth: 0,
 	minHeight: 0,
-	getHeader: false,
 	newtabOnly: false,
-	order: ['width','\u00d7','height','\u00a0','extension','br','perfSize'],
-display: `[
-"width", "\u00d7", "height", "\u00a0", "extension",
-"br", "perfSize"
-]`
+	orders: [{
+		useHeader: false,
+		list: [dataEnum.width, '\u00d7', dataEnum.height,'\u00a0', dataEnum.extension, dataEnum.br, dataEnum.perfSize],
+		display: `"width", "\\u00d7", "height", "\\u00a0", "extension", "br", "perfSize"`},
+	{
+		useHeader: false,
+		list: [dataEnum.width, '\u00d7', dataEnum.height, '\u00a0', dataEnum.extension, dataEnum.br, 'Size: ', dataEnum.perfSize, dataEnum.br, 'Name: ', dataEnum.name, dataEnum.br, 'Domain: ', dataEnum.domain, dataEnum.br, 'Pixels: ', dataEnum.pixels],
+		display: `"width", "\\u00d7", "height", "\\u00a0", "extension", "br",
+"Size: ", "perfSize", "br",
+"Name: ", "name", "br",
+"Domain: ", "domain", "br",
+"Pixels: ", "pixels"`},
+	{
+		useHeader: true,
+		list: [dataEnum.width, '\u00d7', dataEnum.height, '\u00a0', dataEnum.extension, dataEnum.br, 'Mime: ', dataEnum.mime, dataEnum.br, 'Size: ', dataEnum.perfSize, ' ', dataEnum.size, dataEnum.br, 'Name: ', dataEnum.name, dataEnum.br, 'Modified: ', dataEnum.modified, dataEnum.br, 'Domain: ', dataEnum.domain, dataEnum.br, 'Pixels: ', dataEnum.pixels],
+		display: `"width", "\\u00d7", "height", "\\u00a0", "extension", "br",
+"Mime: ", "mime", "br",
+"Size: ", "perfSize", " ", "size", "br",
+"Name: ", "name", "br",
+"Modified: ", "modified", "br",
+"Domain: ", "domain", "br",
+"Pixels: ", "pixels"`}
+	]
 };
 
 	//helper functions
@@ -65,6 +84,17 @@ function getHumanReadable(bytes) {
 	//round to fsprecision #decimal places and add size unit
 	return roundToPrecision(bytes).toLocaleString() + prefs.fsseparator + units[i];
 }
+//find Enum key string from index value
+function findKey(dx, e) {
+	const entries = Object.entries(e);
+	const n = Number(dx);
+	for(let i = 0; i < entries.length; i++) {
+		if(entries[i][1] === n)
+			return entries[i][0];
+	}
+	return undefined;
+}
+
 function readImgHeader(event) {
 	if(event.target.status !== 200)
 		return;
@@ -89,7 +119,7 @@ function readImgHeader(event) {
 function getHeader(keepOld) {
 	//don't get size when disabled
 	//keep if filesize already exists
-	if(!prefs.enabled || !prefs.getHeader || img === undefined || img.src === '' || (keepOld && haveHeader))
+	if(!prefs.enabled || !prefs.orders[currentOrder].useHeader || img === undefined || img.src === '' || (keepOld && haveHeader))
 		return;
 
 	let xhr = new XMLHttpRequest();
@@ -99,32 +129,32 @@ function getHeader(keepOld) {
 }
 //prepare data div according to prefs.order
 function appendData() {
-	for(let i=0; i < prefs.order.length; i++) {
-		const orderStr = prefs.order[i];
+	const order = prefs.orders[currentOrder].list;
+	const enumTot = Object.values(dataEnum).length;
+	for(let i=0; i < order.length; i++) {
 		let elem;
 
-		if(typeof orderStr !== 'string')
-			continue;
 		//if matches a data enum
-		if(dataEnum[orderStr] >= 0) {
-			if(orderStr === 'br')
+		if(typeof order[i] !== 'string' && order[i] < enumTot) {
+			if(order[i] === dataEnum.br)
 				elem = document.createElement('br');
 			else {
 				//add data according to its id
 				elem = document.createElement('span');
-				elem.id = 'imgData-' + orderStr;
+				elem.id = 'imgData-' + findKey(order[i], dataEnum);
 			}
 		} else
-			elem = document.createTextNode(orderStr);
+			elem = document.createTextNode(order[i]);
 		data.appendChild(elem);
 	}
 }
 //fill spans with data
 function getData(keepHeader) {
-	for(let i=0, e=0; i < prefs.order.length; i++, e++) {
+	const order = prefs.orders[currentOrder].list;
+	for(let i=0, e=0; i < order.length; i++, e++) {
 		let txt;
 		//add data according to its id
-		switch(dataEnum[prefs.order[i]]) {
+		switch(order[i]) {
 			case dataEnum.width:
 				txt = img.naturalWidth;
 				break;
@@ -141,7 +171,7 @@ function getData(keepHeader) {
 				txt = img.naturalWidth * img.naturalHeight;
 				break;
 			case dataEnum.extension:
-				const ext = /jpe?g|a?png|webp|gif|avif|tiff?|bmp|svg|bpg|ico|cur/i.exec( img.src.substring(img.src.lastIndexOf('.')+1) );
+				const ext = extRex.exec( img.src.substring(img.src.lastIndexOf('.')+1) );
 				txt = ext ? ext[0] : '';
 				break;
 			case dataEnum.name:

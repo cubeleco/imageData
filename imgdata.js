@@ -123,6 +123,19 @@ function keyUp(event) {
 }
 
 	//preferences functions
+//change currentOrder to orderAlt when div is clicked
+function changeOrder(ev) {
+	if(ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey)
+		return;
+	//toggle between new tab and alt order
+	currentOrder = currentOrder === 1? 2 : 1;
+	data.textContent = '';
+
+	appendData();
+	getData(false);
+	getHeader(false);
+}
+
 function setPrefs(storage) {
 	const isNewTab = document.body.childElementCount === 1 && document.body.firstElementChild.tagName.toLowerCase() === 'img';
 	//check for page not in a new tab
@@ -165,6 +178,16 @@ function setPrefs(storage) {
 	}
 	prefs = storage;
 
+	//force display on newtab
+	if(isNewTab) {
+		img = document.body.firstElementChild;
+		//remove hover off and add additional info onclick
+		document.removeEventListener('mouseover', imgHover);
+		document.removeEventListener('touchstart', imgHover);
+		data.addEventListener('click', changeOrder);
+	}
+	currentOrder = isNewTab? 1 : 0;
+
 	//default:0 over
 	let pos = 'absolute;';
 	switch(prefs.position) {
@@ -186,10 +209,6 @@ function setPrefs(storage) {
 	displayData(false);
 	appendData();
 
-	//force display on newtab
-	if(isNewTab) {
-		img = document.body.firstElementChild;
-	}
 	//reload data if img hovered before prefs were loaded
 	if(img !== undefined) {
 		//TODO no easy way to get clientX cursor coords
@@ -209,9 +228,9 @@ function enabledChange(changes) {
 	if(changes.enabled === undefined || changes.enabled.newValue === undefined)
 		return;
 	prefs.enabled = changes.enabled.newValue;
+	displayData(prefs.enabled);
 	//avoid change from different tab
 	if(document.hasFocus()) {
-		displayData(prefs.enabled);
 		//get filesize if it has not been set yet
 		getHeader(true);
 	}
